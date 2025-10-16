@@ -4,11 +4,12 @@ import pygame
 
 class Enemy(Entity):
     def __init__(self,app, player):
-        super().__init__(app)
+        super().__init__(app, sprite= "enemy_placeholder")
         self.player = player
         self.pos = pygame.Vector2(0,0)
         self.speed = 2
         self.damage = 10
+        self.velocity = pygame.Vector2(0,0)
 
     def update(self):
         super().update()
