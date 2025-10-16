@@ -5,10 +5,11 @@ class Scene:
         self.entities = {}
         self.draw_queue = []
         self.app = app
+        self.camera_pos = pygame.Vector2(0,0)
 
     def draw(self, screen: pygame.Surface):
         for entity in self.entities:
-            self.entities[entity].draw(screen)
+            self.entities[entity].draw(screen, self.camera_pos)
 
     def update(self):
         for entity in self.entities:
