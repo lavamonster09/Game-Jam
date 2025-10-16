@@ -6,23 +6,37 @@ class Player(Entity):
         super().__init__(app)
         self.pos = pygame.Vector2(800, 450)
         self.sprite = "knight_placeholder"
+        
         self.health = 100
         self.damage_cooldown = 30
         self.damage_counter = 0
 
+        self.speed_modifier = 3
+        self.velocity = pygame.Vector2(0, 0)
+        self.FRICTION_COEFF = 0.65
+        self.MAX_VEL = 10
+
     def get_input(self):
         key = pygame.key.get_pressed()
+        direction = pygame.Vector2(0, 0)
 
         if key[pygame.K_w]:
-            self.pos.y -= 1
+            direction.y -= 1
         if key[pygame.K_s]:
-            self.pos.y += 1
+            direction.y += 1
         if key[pygame.K_a]:
-            self.pos.x -= 1
+            direction.x -= 1
         if key[pygame.K_d]:
-            self.pos.x += 1
+            direction.x += 1
+
+        self.velocity *= self.FRICTION_COEFF
+        if direction.length() != 0 and self.velocity.length() < self.MAX_VEL:
+            self.velocity += direction.normalize() * self.speed_modifier
+
+        self.pos += self.velocity
 
     def update(self):
+        super().update()
         self.get_input()
         if self.damage_counter != self.damage_cooldown:
             self.damage_counter += 1 
@@ -31,7 +45,6 @@ class Player(Entity):
         if self.damage_counter == self.damage_cooldown:
             self.damage_counter = 0 
             self.health -= damage
-
             print(self.health)
-        super().update()
-        self.get_input()
+            if self.health <= 0:
+                self.app.current_scene = "death"

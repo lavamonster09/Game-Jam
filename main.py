@@ -12,7 +12,8 @@ def main():
         "ASSET_DIR": "./assets"
     } 
     scenes = {
-        "test": ExampleScene(game)
+        "test": ExampleScene(game),
+        "death": ExampleScene(game),
     }
     game.init(config)
     game.scenes = scenes
