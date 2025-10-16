@@ -19,6 +19,8 @@ class App:
         self.scenes = {}
         self.current_scene = ""
 
+        self.clock = pygame.Clock()
+
     def run(self):
         while self.running:
             self.check_events()
@@ -36,6 +38,7 @@ class App:
         self.screen.fill((0,0,0))
         self.scenes[self.current_scene].draw(self.screen)
         pygame.display.flip()
+        self.clock.tick(60)
 
     def update(self):
         self.scenes[self.current_scene].update() 

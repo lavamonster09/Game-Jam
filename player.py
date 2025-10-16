@@ -7,6 +7,8 @@ class Player(Entity):
         self.pos = pygame.Vector2(800, 450)
         self.sprite = "knight_placeholder"
         self.health = 100
+        self.damage_cooldown = 30
+        self.damage_counter = 0
 
     def get_input(self):
         key_down = pygame.key.get_pressed()
@@ -22,3 +24,12 @@ class Player(Entity):
 
     def update(self):
         self.get_input()
+        if self.damage_counter != self.damage_cooldown:
+            self.damage_counter += 1 
+
+    def damage(self, damage):
+        if self.damage_counter == self.damage_cooldown:
+            self.damage_counter = 0 
+            self.health -= damage
+
+            print(self.health)
