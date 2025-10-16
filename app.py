@@ -5,12 +5,14 @@ from scene import Scene
 from entity import Entity
 
 class App:
-    def init(self, config: dict):
-        self.name = config["NAME"]
-        self.width = config["SCREEN_WIDTH"]
-        self.height = config["SCREEN_HEIGHT"]
+    def init(self, cfg):
+        self.cfg = cfg
+        self.config = cfg.config
+        self.name = self.config["NAME"]
+        self.width = self.config["SCREEN_WIDTH"]
+        self.height = self.config["SCREEN_HEIGHT"]
         
-        self.asset_loader = asset_loader.AssetLoader(config["ASSET_DIR"])
+        self.asset_loader = asset_loader.AssetLoader(self.config["ASSET_DIR"])
 
         self.screen = pygame.display.set_mode((self.width, self.height))
         pygame.display.set_caption(self.name) 

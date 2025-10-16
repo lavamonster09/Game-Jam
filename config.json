@@ -1,17 +1,17 @@
 {
     "keybinds": {
-        "move_up": "w",
-        "move_down": "s",
-        "move_left": "a",
-        "move_right": "d",
-        "attack": "space",
-        "quit": "esc"
+        "MOVE_UP": "w",
+        "MOVE_DOWN": "s",
+        "MOVE_LEFT": "a",
+        "MOVE_RIGHT": "d",
+        "ATTACK": "space",
+        "QUIT": "escape"
     },
     "settings": {
-        "name": "Black Souls III",
-        "screen_width": 1600,
-        "screen_height": 900,
-        "asset_dir": "./assets",
-        "volume": 100
+        "NAME": "Black Souls III",
+        "SCREEN_WIDTH": 1600,
+        "SCREEN_HEIGHT": 900,
+        "ASSET_DIR": "./assets",
+        "VOLUME": 100
     }
 }

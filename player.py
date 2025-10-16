@@ -5,8 +5,7 @@ class Player(Entity):
     def __init__(self, app):
         super().__init__(app)
         self.pos = pygame.Vector2(800, 450)
-        self.sprite = "knight_placeholder"
-        
+        self.sprite = "knight_placeholder"        
         self.health = 100
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -16,17 +15,19 @@ class Player(Entity):
         self.FRICTION_COEFF = 0.65
         self.MAX_VEL = 10
 
+        self.keybinds = self.app.cfg
+
     def get_input(self):
         key = pygame.key.get_pressed()
         direction = pygame.Vector2(0, 0)
 
-        if key[pygame.K_w]:
+        if key[self.keybinds.get_key_code("MOVE_UP")]:
             direction.y -= 1
-        if key[pygame.K_s]:
+        if key[self.keybinds.get_key_code("MOVE_DOWN")]:
             direction.y += 1
-        if key[pygame.K_a]:
+        if key[self.keybinds.get_key_code("MOVE_LEFT")]:
             direction.x -= 1
-        if key[pygame.K_d]:
+        if key[self.keybinds.get_key_code("MOVE_RIGHT")]:
             direction.x += 1
 
         self.velocity *= self.FRICTION_COEFF
