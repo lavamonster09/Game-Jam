@@ -15,7 +15,7 @@ class Entity:
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         sprite = self.app.asset_loader.get(self.sprite)
         screen_size = surface.get_size()
-        surface.blit(sprite, self.pos.xy + pygame.Vector2(screen_size)//2)
+        surface.blit(sprite, self.pos.xy + pygame.Vector2(screen_size)//2 - camera_pos)
         if self.visible:
             for child in self.children:
                 child.draw(surface)
