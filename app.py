@@ -7,7 +7,8 @@ class App:
         self.width = config["SCREEN_WIDTH"]
         self.height = config["SCREEN_HEIGHT"]
 
-        self.screen = pygame.display.set_mode((self.width, self.height)) 
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        pygame.display.set_caption(self.name) 
         self.running = True
 
     def run(self):
@@ -23,8 +24,8 @@ class App:
                 pygame.quit()
                 self.running = False
 
-    def draw():
+    def draw(self):
         pass
 
-    def update():
+    def update(self):
         pass
