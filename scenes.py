@@ -18,4 +18,3 @@ class ExampleScene(Scene):
     def update(self):
         super().update()
         self.test.pos.x += 1  
-        self.camera_pos = self.test.pos
