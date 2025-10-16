@@ -9,16 +9,17 @@ class Player(Entity):
         self.health = 100
 
     def get_input(self):
-        key_down = pygame.key.get_pressed()
+        key = pygame.key.get_pressed()
 
-        if key_down[pygame.K_w]:
+        if key[pygame.K_w]:
             self.pos.y -= 1
-        if key_down[pygame.K_s]:
+        if key[pygame.K_s]:
             self.pos.y += 1
-        if key_down[pygame.K_a]:
+        if key[pygame.K_a]:
             self.pos.x -= 1
-        if key_down[pygame.K_d]:
+        if key[pygame.K_d]:
             self.pos.x += 1
 
     def update(self):
+        super().update()
         self.get_input()
