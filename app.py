@@ -44,3 +44,6 @@ class App:
 
     def update(self):
         self.scenes[self.current_scene].update() 
+
+    def get_current_scene(self):
+        return self.scenes[self.current_scene]

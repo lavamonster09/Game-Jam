@@ -3,7 +3,7 @@ import pygame
 class Entity:
     def __init__(self,app,sprite = "none"):
         self.children = {}
-        self.visible = False
+        self.attributes = {"visible":True}
         self.sprite = sprite
         self.app = app
         self.pos = pygame.Vector3(0, 0, 0)
@@ -22,8 +22,8 @@ class Entity:
         sprite = self.app.asset_loader.get(self.sprite)
         screen_size = surface.get_size()
         self.offset = pygame.Vector2(screen_size)//2 - camera_pos
-        surface.blit(sprite, self.pos.xy + self.offset)
-        if self.visible:
+        if self.attributes.get("visible", False):
+            surface.blit(sprite, self.pos.xy + self.offset)
             for child in self.children:
                 child.draw(surface)
     

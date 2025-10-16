@@ -34,7 +34,7 @@ class ExampleScene(Scene):
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)
         rnd_dir = random.randrange(0, 360)
-        enemy.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * 1600
+        enemy.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * 900
 
 
         self.add_entity(enemy)

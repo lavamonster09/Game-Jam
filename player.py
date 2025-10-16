@@ -3,9 +3,9 @@ from entity import *
 
 class Player(Entity):
     def __init__(self, app):
-        super().__init__(app)
+        super().__init__(app, "knight_placeholder" )       
+        
         self.pos = pygame.Vector2(800, 450)
-        self.sprite = "knight_placeholder"        
         self.health = 100
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -16,6 +16,8 @@ class Player(Entity):
         self.MAX_VEL = 10
 
         self.keybinds = self.app.cfg
+
+        self.attributes["collidable"] = True
 
     def get_input(self):
         key = pygame.key.get_pressed()
