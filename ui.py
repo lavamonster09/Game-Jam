@@ -53,7 +53,7 @@ class HUD(Entity):
         self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 61)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
         self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
-        self.LEVEL_TEXT_OFFSET = pygame.Vector2(300, 160)
+        self.LEVEL_TEXT_OFFSET = pygame.Vector2(288, 160)
         self.LEVEL_BUTTON_STEP = 64
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
@@ -116,7 +116,7 @@ class HUD(Entity):
             surface.blit(self.down_cursor ,self.cursor_rect)
 
     def draw_level_popup(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
-        surface.blit(self.level_menu, self.level_menu.get_rect(topleft= self.LEVEL_MENU_OFFSET))
+        surface.blit(self.new_level_menu, self.new_level_menu.get_rect(topleft= self.LEVEL_MENU_OFFSET))
         
         for child in self.children:
             child.draw(surface, camera_pos)
@@ -161,12 +161,19 @@ class HUD(Entity):
         return surf     
 
     def make_level_popup(self):
+        self.new_level_menu = self.level_menu.copy()
         buttons = [
             Button(self.app, self.level_up, "sheet_2_level_up_button", ["Strength"]),
             Button(self.app, self.level_up, "sheet_2_level_up_button", ["Dexterity"]),
             Button(self.app, self.level_up,  "sheet_2_level_up_button", ["Vigor"]),
             Button(self.app, self.level_up,  "sheet_2_level_up_button", ["Endurance"])
         ]
+
+    
+        levels = list(self.player.levels.values())
+        for i in range(len(levels)):
+            surf = self.make_text(str(levels[i]))
+            self.new_level_menu.blit(surf, surf.get_rect(topright= (self.LEVEL_TEXT_OFFSET) + (0, i * 64)))
 
         for i in range(0, 4):
             buttons[i].pos = self.LEVEL_MENU_OFFSET + (self.LEVEL_BUTTON_OFFSET.x, self.LEVEL_BUTTON_OFFSET.y + i * self.LEVEL_BUTTON_STEP)
