@@ -3,15 +3,16 @@ from enemy import Enemy
 import pygame
 
 class Button(Entity):
-    def __init__(self, app, on_click , sprite="none"):
+    def __init__(self, app, on_click, on_click_args= [], sprite="none"):
         super().__init__(app, sprite)
         self.on_click = on_click
+        self.on_click_args = on_click_args
         
     def update(self):
         super().update()
         if self.get_rect().collidepoint(pygame.mouse.get_pos()):
             if pygame.mouse.get_just_pressed()[0]:
-                self.on_click()
+                self.on_click(*self.on_click_args)
 
 class HUD(Entity):
     def __init__(self, app, player):
@@ -21,6 +22,7 @@ class HUD(Entity):
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("CURSOR2")
+        self.level_menu = self.app.asset_loader.get("level_up_menu")
 
         pygame.mouse.set_visible(False)
 
@@ -28,7 +30,6 @@ class HUD(Entity):
         self.cutout_image = cutout_mask.to_surface()
         self.cutout_image.set_colorkey('#FFFFFF')
 
-        
         self.player = player
         self.previous_health = 0
         self.previous_xp = -1
@@ -39,12 +40,17 @@ class HUD(Entity):
         self.HEALTH_TEXT_OFFSET = pygame.Vector2(64, 300)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
+        self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
+        self.LEVEL_BUTTON_OFFSET = pygame.Vector2(160, 80)
+        self.LEVEL_BUTTON_STEP = 64
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
         self.target_xp_pos = self.XP_OFFSET 
 
         self.health_pos = pygame.Vector2(0, 1)
         self.xp_pos = pygame.Vector2(1, 0)
+
+        self.level_available = False
 
     def get_relative_pos(self, surface: pygame.Surface, camera_pos: pygame.Vector2) -> pygame.Vector2:
         relative_pos = self.player.pos - camera_pos
@@ -74,6 +80,9 @@ class HUD(Entity):
     def draw_xp(self, surface: pygame.Surface):
         if self.previous_xp != self.player.xp:
             self.target_xp_pos = self.get_missing_xp()
+            if self.player.xp == self.player.max_xp:
+                self.level_available = True
+                self.make_level_popup()
         self.cutout_xp()
         if self.target_xp_pos == pygame.Vector2(0,0):
             self.target_xp_pos = pygame.Vector2(0.001,0)
@@ -87,6 +96,13 @@ class HUD(Entity):
         mouse_pos = pygame.mouse.get_pos()
         self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
         surface.blit(self.cursor_image, self.cursor_rect)
+
+    def draw_level_popup(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
+        surface.blit(self.level_menu, self.level_menu.get_rect(topleft= self.LEVEL_MENU_OFFSET))
+        
+        for child in self.children:
+            child.draw(surface, camera_pos)
+            child.update()
 
     def cutout_health(self):
         size = self.health_image.size
@@ -119,10 +135,30 @@ class HUD(Entity):
         xp_pos = pygame.Vector2(bar_size * percent_missing_xp, 0)
         return xp_pos
 
+    def make_level_popup(self):
+        buttons = [
+            Button(self.app, self.level_up, "Strength", "level_up_button"),
+            Button(self.app, self.level_up, "Dexterity", "level_up_button"),
+            Button(self.app, self.level_up, "Vigor", "level_up_button"),
+            Button(self.app, self.level_up, "Endurance", "level_up_button")
+        ]
+
+        for i in range(0, 4):
+            buttons[i].pos = self.LEVEL_MENU_OFFSET + (self.LEVEL_BUTTON_OFFSET.x, self.LEVEL_BUTTON_OFFSET.y + i * self.LEVEL_BUTTON_STEP)
+            self.add_child(buttons[i])
+
+    def level_up(self, stat: str):
+        self.player.levels[stat] += 1
+        self.level_available = False
+        print(stat)
+
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         self.pos = self.get_relative_pos(surface, camera_pos)
         self.draw_xp(surface)
         self.draw_health(surface)
-        self.draw_cursor(surface)
         self.draw_fps(surface)
+        if self.level_available == True:
+            self.app.paused = True
+            self.draw_level_popup(surface, camera_pos)
         surface.blit(self.hud_image, self.pos)
+        self.draw_cursor(surface)
