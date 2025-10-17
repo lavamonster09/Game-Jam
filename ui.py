@@ -21,8 +21,14 @@ class HUD(Entity):
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("null")
+
+        self.new_health_image = self.app.asset_loader.get("full_health")
+        cutout_mask = pygame.mask.from_surface(self.health_image)
+        self.cutout_image = cutout_mask.to_surface()
+        self.cutout_image.set_colorkey((255,255,255))
         
         self.player = player
+        self.previous_health = 0
         self.pos = self.player.pos
 
         self.clock = self.app.clock
@@ -41,11 +47,20 @@ class HUD(Entity):
         surface.blit(self.fps_text, self.fps_rect)
 
     def draw_health(self, surface: pygame.Surface):
+        if self.previous_health != self.player.health:
+            self.health_pos = self.get_missing_health()
+            self.new_health_image = self.health_image.copy()
+
         self.health_text = self.font.render(str(self.player.health), True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
-        #self.health_image.fill((0, 0, 0, 0), (10, 10, 100, 100))
-        surface.blit(self.health_image, self.get_health_pos())
+
+        self.new_health_image.blit(self.cutout_image, self.cutout_image.get_rect(topleft= -self.health_pos))
+        self.new_health_image.set_colorkey((0,0,0))
+
+        surface.blit(self.new_health_image, self.pos + self.health_pos + self.HEALTH_BAR_OFFSET)
         surface.blit(self.health_text, self.health_rect)
+
+        self.previous_health = self.player.health
 
     def draw_xp(self, surface: pygame.Surface):
         percent_xp = self.player.xp / 100
@@ -57,10 +72,14 @@ class HUD(Entity):
         self.cursor_rect = self.cursor_image.get_rect(center= mouse_pos)
         surface.blit(self.cursor_image, self.cursor_rect)
 
-    def get_health_pos(self) -> pygame.Vector2:
+    def cutout_health(self) -> pygame.Mask:
+        bar_mask = pygame.mask.from_surface(self.health_image).invert
+        return bar_mask
+
+    def get_missing_health(self) -> pygame.Vector2:
         percent_health_missing = 1 - self.player.health / 100
         img_height = self.health_image.get_height() - 64
-        health_pos = self.pos + (0, img_height * percent_health_missing) + self.HEALTH_BAR_OFFSET
+        health_pos = pygame.Vector2(0, img_height * percent_health_missing)
         return health_pos
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
