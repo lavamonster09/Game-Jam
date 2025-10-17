@@ -2,6 +2,7 @@ import pygame
 import random
 from entity import Entity
 from enemy import Enemy
+from xp import Xp
 
 class EnemyManager(Entity):
     def __init__(self, app, player):
@@ -33,6 +34,9 @@ class EnemyManager(Entity):
                 kill_list.append(child)
 
         for i in kill_list:
+            xp = Xp(self.app, self.player)
+            xp.pos = i.pos
+            self.app.get_current_scene().add_entity(xp)
             self.remove_child(i)
 
         if len(self.children) == 0:
@@ -47,4 +51,3 @@ class EnemyManager(Entity):
             self.wave_cleared = False
         else:
             self.check_children()
-
