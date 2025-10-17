@@ -50,9 +50,10 @@ class HUD(Entity):
         self.HEALTH_TEXT_OFFSET = pygame.Vector2(65, 300)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
-        self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 40)
+        self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 61)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
         self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
+        self.LEVEL_TEXT_OFFSET = pygame.Vector2(300, 160)
         self.LEVEL_BUTTON_STEP = 64
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
@@ -104,7 +105,7 @@ class HUD(Entity):
 
     def draw_kill_count(self, surface: pygame.Surface):
         self.kill_count = self.make_text(str(self.player.total_kills))
-        surface.blit(self.kill_count, self.kill_count.get_rect(topleft = (self.pos + self.KILL_COUNT_OFFSET)))
+        surface.blit(self.kill_count, self.kill_count.get_rect(midleft = (self.pos + self.KILL_COUNT_OFFSET)))
 
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
