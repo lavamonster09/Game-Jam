@@ -3,12 +3,13 @@ from entity import *
 
 class Player(Entity):
     def __init__(self, app):
-        super().__init__(app, "knight_placeholder") 
-        self.pos = pygame.Vector2(800, 450)
+        super().__init__(app, "sheet_2_knight_placeholder") 
+        self.pos = pygame.Vector2(0, 0)
         self.health = 100
         self.max_health = 100
         self.xp = 0
         self.max_xp = 100
+        self.max_health = 100
         self.total_kills = 0
 
         self.damage_cooldown = 30
@@ -111,3 +112,17 @@ class Player(Entity):
             print(self.health)
             if self.health <= 0:
                 self.app.current_scene = "death"
+
+    def draw(self, surface, camera_pos):
+        sprite = self.app.asset_loader.get(self.sprite)
+        if type(sprite) == list:
+            if self.state == "rolling":
+                sprite = sprite[1]
+            else:
+                sprite = sprite[0]
+        screen_size = surface.get_size()
+        self.offset = pygame.Vector2(screen_size)//2 - camera_pos
+        if self.attributes.get("visible", False):
+            surface.blit(sprite, self.pos.xy + self.offset)
+            for child in self.children:
+                child.draw(surface, camera_pos)
