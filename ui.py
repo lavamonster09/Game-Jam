@@ -22,7 +22,8 @@ class HUD(Entity):
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("CURSOR2")
-        self.level_menu = self.app.asset_loader.get("level_up_menu")
+        self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
+        
 
         pygame.mouse.set_visible(False)
 
@@ -95,7 +96,10 @@ class HUD(Entity):
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
         self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
-        surface.blit(self.cursor_image, self.cursor_rect)
+        if not pygame.mouse.get_pressed()[0]:
+            surface.blit(self.cursor_image, self.cursor_rect)
+        else:
+            surface.blit(self.down_cursor ,self.cursor_rect)
 
     def draw_level_popup(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         surface.blit(self.level_menu, self.level_menu.get_rect(topleft= self.LEVEL_MENU_OFFSET))
