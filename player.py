@@ -3,7 +3,7 @@ from entity import *
 
 class Player(Entity):
     def __init__(self, app):
-        super().__init__(app, "knight_placeholder" )       
+        super().__init__(app, "knight_placeholder")       
         
         self.pos = pygame.Vector2(800, 450)
         self.health = 100

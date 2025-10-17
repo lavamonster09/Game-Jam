@@ -21,12 +21,11 @@ class MeleeWeapon(Entity):
                 self.attack()
 
     def attack(self):
-        print("attack")
         self.attack_counter = 0 
         for entity in self.app.get_current_scene().entities :
             self.rect = self.get_rect()
-            if self.get_rect().colliderect(entity.get_rect()) and entity.attributes.get("damageable", False): 
-                entity.damage(1)
+            if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("damageable", False): 
+                entity.hurt(self.damage, self.knockback)
 
     def draw(self, surface, camera_pos):
         if self.attack_counter < self.attack_time:
@@ -34,8 +33,13 @@ class MeleeWeapon(Entity):
         return super().draw(surface, camera_pos)
 
     def get_rect(self):
-        rect = super().get_rect()
-        dir = pygame.Vector2(pygame.mouse.get_pos()[0] / self.app.width * 2 - 1, pygame.mouse.get_pos()[1] / self.app.height * 2 - 1)
-        print(dir) 
+        dir = pygame.mouse.get_pos() - self.get_screen_pos()
+        dir = dir.normalize()
+        if self.damage_rect:
+            rect = self.damage_rect
+        else:
+            rect = pygame.Rect(0,0,0,0)
         rect.center = self.pos + dir * 100
         return rect
+
+

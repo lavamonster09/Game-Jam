@@ -11,13 +11,16 @@ class Entity:
 
     def update(self):
         for child in self.children:
-            child.pos = self.pos
+            child.pos = pygame.Vector2(self.get_rect().center)
             child.update()
 
     def get_rect(self) -> pygame.Rect:
         rect = self.app.asset_loader.get(self.sprite).get_rect()
         rect.topleft = self.pos.xy + self.offset
         return rect
+    
+    def get_screen_pos(self) -> pygame.Vector2:
+        return self.pos 
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         sprite = self.app.asset_loader.get(self.sprite)
