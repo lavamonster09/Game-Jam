@@ -6,15 +6,17 @@ from entity import Entity
 
 class App:
     def init(self, cfg):
+        pygame.display.init()
+
         self.cfg = cfg
         self.config = cfg.config
         self.name = self.config["NAME"]
         self.width = self.config["SCREEN_WIDTH"]
         self.height = self.config["SCREEN_HEIGHT"]
         
-        self.asset_loader = asset_loader.AssetLoader(self.config["ASSET_DIR"])
 
         self.screen = pygame.display.set_mode((self.width, self.height))
+        self.asset_loader = asset_loader.AssetLoader(self.config["ASSET_DIR"])
         pygame.display.set_caption(self.name) 
         self.running = True
 
@@ -28,7 +30,6 @@ class App:
             self.check_events()
             self.update()            
             self.draw()
-
 
     def check_events(self):       
         for event in pygame.event.get():

@@ -2,14 +2,16 @@ import pygame
 import math
 from entity import Entity
 
-class MeleWeapon(Entity):
+class MeleeWeapon(Entity):
     def __init__(self, app, range: int, damage: int):
         super().__init__(app)
         self.range = range
         self.damage = damage
         self.attack_time = 30
         self.attack_counter = 30
-        self. damage_rect = None
+        self.damage_rect = None
+        self.attributes["visible"] = False
+
     def update(self):        
         super().update()
         if self.attack_time != self.attack_counter:

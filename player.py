@@ -7,6 +7,7 @@ class Player(Entity):
         
         self.pos = pygame.Vector2(800, 450)
         self.health = 100
+        self.xp = 0
         self.damage_cooldown = 30
         self.damage_counter = 0
 

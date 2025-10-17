@@ -3,7 +3,7 @@ from entity import Entity
 import pygame
 from player import Player
 from enemy import Enemy
-from weapons import MeleWeapon
+from weapons import MeleeWeapon
 from ui import * 
 import random
 
@@ -18,12 +18,12 @@ class ExampleScene(Scene):
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
-        self.player.add_child(MeleWeapon(self.app, 100, 1))
+        self.player.add_child(MeleeWeapon(self.app, 100, 1))
 
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(btn1)
         self.add_entity(self.test,)
-        #self.add_entity(test2)
+        self.add_entity(test2)
         self.add_entity(self.player)
         self.add_entity(self.hud)
 
