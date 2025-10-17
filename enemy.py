@@ -8,7 +8,7 @@ class Enemy(Entity):
         self.player = player
         self.pos = pygame.Vector2(0,0)
         self.speed = 2
-        self.MAX_VEL = 3 
+        self.MAX_VEL = 300 
         self.damage = 10
         self.velocity = pygame.Vector2(0,0)
         self.attributes["collidable"] = True
@@ -18,6 +18,7 @@ class Enemy(Entity):
 
     def update(self):
         super().update()
+        self.velocity *= 0.65
         self.velocity += (self.pos.move_towards(self.player.pos, self.speed) - self.pos).normalize()
         for entity in self.app.get_current_scene().entities:
             if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable",False) and entity != self:
@@ -27,8 +28,9 @@ class Enemy(Entity):
         if self.pos.distance_to(self.player.pos) <= 64:
             self.player.damage(self.damage)
 
-    def damage(self, damage:float):
-        self.health -= damage
+    def hurt(self, dmg:float, knockback: float):
+        self.health -= dmg
         if self.health <= 0:
             self.alive = False
             self.attributes["visible"] = False
+        self.velocity = -self.velocity * knockback
