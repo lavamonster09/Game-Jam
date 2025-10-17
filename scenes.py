@@ -14,9 +14,6 @@ class ExampleScene(Scene):
         super().__init__(app)
         self.test = Entity(self.app)
         self.test.pos = pygame.Vector2(0, 0)
-        test2 = Entity(self.app, "grass_background")
-        test2.pos = pygame.Vector2(64,64)
-        test2.z_index = -1
         self.player = Player(self.app)
         self.enemy_manager = EnemyManager(self.app, self.player)
         self.target_camera_pos = self.player.pos
@@ -30,7 +27,6 @@ class ExampleScene(Scene):
         self.add_entity(self.enemy_manager)
         #self.add_entity(btn1)
         self.add_entity(self.test,)
-        self.add_entity(test2)
         self.add_entity(self.player)
         self.add_entity(self.hud)
 
@@ -39,7 +35,8 @@ class ExampleScene(Scene):
             self.hud.update()
         else:
             super().update()
-            self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
+            if self.target_camera_pos != pygame.Vector2(0,0):
+                self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
             
             self.test.pos.x += 1  
 
@@ -51,4 +48,21 @@ class ExampleScene(Scene):
         xp.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * 900
         #self.add_entity(enemy)
         self.add_entity(xp)
+
+    def draw(self, screen):
+        grass = self.app.asset_loader.get("grass_background")
+        offsets = [
+            (0,0),
+            (0,1),
+            (0,-1),
+            (1,0),
+            (1,1),
+            (1,-1),
+            (-1,1),
+            (-1,0),
+            (-1,-1)
+        ]
+        for offset in offsets:
+            screen.blit(grass, ((offset[0] + self.player.pos.x // self.app.width) * self.app.width - self.camera_pos.x, (offset[1] + self.player.pos.y // self.app.height) * self.app.height - self.camera_pos.y))
+        return super().draw(screen)
     
