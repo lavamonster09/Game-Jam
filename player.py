@@ -9,6 +9,7 @@ class Player(Entity):
         self.health = 100
         self.xp = 0
         self.max_xp = 100
+        self.max_health = 100
         self.total_kills = 0
 
         self.damage_cooldown = 30
@@ -72,7 +73,6 @@ class Player(Entity):
 
         self.pos += self.velocity
 
-<<<<<<< HEAD
     def level_up(self, stat):
         self.total_level += 1
         self.levels[stat] += 1
@@ -88,8 +88,6 @@ class Player(Entity):
         self.max_xp += 20
         self.xp = 0
 
-=======
->>>>>>> 8cb0a5568407e178ccbb8f21c7aae32ef9dfd664
     def update(self):
         super().update()
         self.get_input()
@@ -105,3 +103,17 @@ class Player(Entity):
             print(self.health)
             if self.health <= 0:
                 self.app.current_scene = "death"
+
+    def draw(self, surface, camera_pos):
+        sprite = self.app.asset_loader.get(self.sprite)
+        if type(sprite) == list:
+            if self.state == "rolling":
+                sprite = sprite[1]
+            else:
+                sprite = sprite[0]
+        screen_size = surface.get_size()
+        self.offset = pygame.Vector2(screen_size)//2 - camera_pos
+        if self.attributes.get("visible", False):
+            surface.blit(sprite, self.pos.xy + self.offset)
+            for child in self.children:
+                child.draw(surface, camera_pos)
