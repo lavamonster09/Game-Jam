@@ -16,12 +16,10 @@ class Button(Entity):
 class HUD(Entity):
     def __init__(self, app, player):
         super().__init__(app, sprite="none")
-        pygame.font.init()
-        self.font = pygame.font.Font("./assets/JetBrainsMonoNL-Medium.ttf", 32)
         self.player = player
         self.pos = self.player.pos
         self.HEALTH_OFFSET = pygame.Vector2(-750,-100)
-
+        self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
 
     def get_relative_pos(self, surface: pygame.Surface, camera_pos: pygame.Vector2) -> pygame.Vector2:
         surf_size = surface.get_size()
