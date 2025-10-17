@@ -3,15 +3,15 @@ import math
 from entity import Entity
 
 class MeleeWeapon(Entity):
-    def __init__(self, app, range: int, damage: int):
+    def __init__(self, app, range: int, damage: int, attack_time: int, knockback: float):
         super().__init__(app)
         self.range = range
         self.damage = damage
-        self.attack_time = 30
-        self.attack_counter = 30
+        self.attack_time = attack_time
+        self.attack_counter = attack_time
         self.damage_rect = None
+        self.knockback = knockback
         self.attributes["visible"] = False
-
     def update(self):        
         super().update()
         if self.attack_time != self.attack_counter:

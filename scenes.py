@@ -18,7 +18,9 @@ class ExampleScene(Scene):
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
-        self.player.add_child(MeleeWeapon(self.app, 100, 1))
+        weapon = MeleeWeapon(self.app, 1, 1, 10, 1)
+        weapon.damage_rect = pygame.Rect(0,0,100,100)
+        self.player.add_child(weapon)
 
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(btn1)
