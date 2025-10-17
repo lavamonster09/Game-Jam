@@ -4,7 +4,7 @@
         "MOVE_DOWN": "s",
         "MOVE_LEFT": "a",
         "MOVE_RIGHT": "d",
-        "ATTACK": "space",
+        "DODGE": "space",
         "QUIT": "escape"
     },
     "settings": {

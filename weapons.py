@@ -24,7 +24,7 @@ class MeleeWeapon(Entity):
         self.attack_counter = 0 
         for entity in self.app.get_current_scene().entities :
             self.rect = self.get_rect()
-            if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("damageable", False): 
+            if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
                 entity.hurt(self.damage, self.knockback)
 
     def draw(self, surface, camera_pos):
