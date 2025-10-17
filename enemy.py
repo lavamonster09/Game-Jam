@@ -20,8 +20,8 @@ class Enemy(Entity):
         super().update()
         self.velocity *= 0.65
         self.velocity += (self.pos.move_towards(self.player.pos, self.speed) - self.pos).normalize()
-        for entity in self.app.get_current_scene().entities:
-            if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable",False) and entity != self:
+        for entity in self.app.get_current_scene().enemy_manager.children:
+            if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable",False) and entity != self and(self.pos.move_towards(entity.pos, self.speed) - self.pos).magnitude() != 0:
                 self.velocity -= 2 *(self.pos.move_towards(entity.pos, self.speed) - self.pos).normalize() 
         self.velocity = self.velocity.clamp_magnitude(self.MAX_VEL)
         self.pos += self.velocity

@@ -8,6 +8,7 @@ class Scene:
         self.camera_pos = pygame.Vector2(0,0)
 
     def draw(self, screen: pygame.Surface):
+        self.entities.sort(key = lambda x: x.z_index)
         for entity in self.entities:
             entity.draw(screen, self.camera_pos)
 

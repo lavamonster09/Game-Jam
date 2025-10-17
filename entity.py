@@ -6,8 +6,9 @@ class Entity:
         self.attributes = {"visible":True}
         self.sprite = sprite
         self.app = app
-        self.pos = pygame.Vector3(0, 0, 0)
+        self.pos = pygame.Vector2(0, 0)
         self.offset = pygame.Vector2(0,0)
+        self.z_index = 0
 
     def update(self):
         for child in self.children:

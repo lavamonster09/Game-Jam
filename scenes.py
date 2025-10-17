@@ -16,11 +16,13 @@ class ExampleScene(Scene):
         self.test.pos = pygame.Vector2(0, 0)
         test2 = Entity(self.app, "grass_background")
         test2.pos = pygame.Vector2(64,64)
+        test2.z_index = -1
         self.player = Player(self.app)
         self.enemy_manager = EnemyManager(self.app, self.player)
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
+        self.hud.z_index = 1000000
         weapon = MeleeWeapon(self.app, 1, 1, 10, 1)
         weapon.damage_rect = pygame.Rect(0,0,100,100)
         self.player.add_child(weapon)
