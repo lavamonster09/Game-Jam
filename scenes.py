@@ -4,6 +4,7 @@ import pygame
 from player import Player
 from enemy import Enemy
 from weapons import MeleeWeapon
+from xp import Xp
 from ui import * 
 import random
 
@@ -39,7 +40,8 @@ class ExampleScene(Scene):
         enemy = Enemy(self.app, self.player)
         rnd_dir = random.randrange(0, 360)
         enemy.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * 900
-
-
-        self.add_entity(enemy)
+        xp = Xp(self.app, self.player)
+        xp.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * 900
+        #self.add_entity(enemy)
+        self.add_entity(xp)
     
