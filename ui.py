@@ -26,7 +26,6 @@ class HUD(Entity):
         self.cutout_image = cutout_mask.to_surface()
         self.cutout_image.set_colorkey('#FFFFFF')
 
-        self.target_health_pos = pygame.Vector2(33,33)
         
         self.player = player
         self.previous_health = 0
@@ -39,7 +38,12 @@ class HUD(Entity):
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
 
-        self.health_pos = pygame.Vector2(0,1)
+        self.target_health_pos = self.HEALTH_BAR_OFFSET
+        self.target_xp_pos = self.XP_OFFSET 
+
+        self.health_pos = pygame.Vector2(0, 1)
+        self.xp_pos = pygame.Vector2(1, 0)
+
     def get_relative_pos(self, surface: pygame.Surface, camera_pos: pygame.Vector2) -> pygame.Vector2:
         relative_pos = self.player.pos - camera_pos
         return relative_pos
@@ -66,7 +70,10 @@ class HUD(Entity):
 
     def draw_xp(self, surface: pygame.Surface):
         if self.previous_xp != self.player.xp:
-            self.cutout_xp()
+            self.target_xp_pos = self.get_missing_xp()
+        self.cutout_xp()
+        if self.target_xp_pos != pygame.Vector2(0,0):
+            self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05)        
 
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
 
@@ -89,20 +96,24 @@ class HUD(Entity):
 
     def cutout_xp(self):
         bar_size = self.xp_image.get_size()
-        percent_missing_xp = 1 - self.player.xp / self.player.max_xp
-        cutout_size = (bar_size[0] * percent_missing_xp, bar_size[1])
+        cutout_size = (self.xp_pos.x, bar_size[1])
         cutout_surf = pygame.Surface(cutout_size)
         cutout_surf.fill('#000000')
         self.new_xp_image = self.xp_image.copy()
         self.new_xp_image.blit(cutout_surf, cutout_surf.get_rect(bottomright= bar_size))
         self.new_xp_image.set_colorkey('#000000')
 
-
     def get_missing_health(self) -> pygame.Vector2:
         percent_health_missing = 1 - self.player.health / 100
         img_height = self.health_image.get_height() - 64
         health_pos = pygame.Vector2(0, img_height * percent_health_missing)
         return health_pos
+    
+    def get_missing_xp(self) -> pygame.Vector2:
+        percent_missing_xp = 1 - self.player.xp / self.player.max_xp
+        bar_size = self.xp_image.get_width()
+        xp_pos = pygame.Vector2(bar_size * percent_missing_xp, 0)
+        return xp_pos
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         self.pos = self.get_relative_pos(surface, camera_pos)
