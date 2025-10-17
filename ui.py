@@ -20,7 +20,9 @@ class HUD(Entity):
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
-        self.cursor_image = self.app.asset_loader.get("null")
+        self.cursor_image = self.app.asset_loader.get("CURSOR2")
+
+        pygame.mouse.set_visible(False)
 
         cutout_mask = pygame.mask.from_surface(self.health_image)
         self.cutout_image = cutout_mask.to_surface()
@@ -61,7 +63,7 @@ class HUD(Entity):
             self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
 
 
-        self.health_text = self.font.render(str(self.player.health), True, '#00A494')
+        self.health_text = self.font.render(f"{round(self.player.health * 100 / self.player.max_health)}", True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
 
         surface.blit(self.new_health_image, self.pos + self.health_pos + self.HEALTH_BAR_OFFSET)
@@ -74,7 +76,7 @@ class HUD(Entity):
             self.target_xp_pos = self.get_missing_xp()
         self.cutout_xp()
         if self.target_xp_pos == pygame.Vector2(0,0):
-            self.target_xp_pos = pygame.Vector2(0.1,0)
+            self.target_xp_pos = pygame.Vector2(0.001,0)
         self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05) 
 
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
@@ -83,7 +85,7 @@ class HUD(Entity):
 
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
-        self.cursor_rect = self.cursor_image.get_rect(center= mouse_pos)
+        self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
         surface.blit(self.cursor_image, self.cursor_rect)
 
     def cutout_health(self):
@@ -106,7 +108,7 @@ class HUD(Entity):
         self.new_xp_image.set_colorkey('#000000')
 
     def get_missing_health(self) -> pygame.Vector2:
-        percent_health_missing = 1 - self.player.health / 100
+        percent_health_missing = 1 - self.player.health / self.player.max_health
         img_height = self.health_image.get_height() - 64
         health_pos = pygame.Vector2(0, img_height * percent_health_missing)
         return health_pos

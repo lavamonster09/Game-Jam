@@ -6,6 +6,7 @@ class Player(Entity):
         super().__init__(app, "knight_placeholder") 
         self.pos = pygame.Vector2(800, 450)
         self.health = 100
+        self.max_health = 100
         self.xp = 0
         self.max_xp = 100
 
@@ -31,8 +32,8 @@ class Player(Entity):
         self.levels = {
             "Strength": 0,
             "Dexterity": 0,
-            "Endurance": 0,
             "Vigor": 0,
+            "Endurance": 0,
         }
 
         self.attributes["collidable"] = True
