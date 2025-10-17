@@ -10,10 +10,10 @@ class Player(Entity):
         self.damage_cooldown = 30
         self.damage_counter = 0
 
-        self.speed_modifier = 3
+        self.speed_modifier = 1.25 
         self.velocity = pygame.Vector2(0, 0)
         self.FRICTION_COEFF = 0.65
-        self.MAX_VEL = 10
+        self.MAX_VEL = 2
 
         self.keybinds = self.app.cfg
 

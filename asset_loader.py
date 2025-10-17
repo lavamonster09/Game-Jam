@@ -11,7 +11,9 @@ class AssetLoader:
         for dir in self.asset_dir:
             for file in dir[2]:
                 if file.split(".")[-1] in ["png","jpg","jpeg"]:
-                    self.assets[file.split(".")[0]] = pygame.transform.scale2x(pygame.image.load(dir[0] + "/" + file))
+                    image = pygame.image.load(dir[0] + "/" + file)
+
+                    self.assets[file.split(".")[0]] = pygame.transform.scale(image, (image.width * 2, image.height * 2))
                   
     def get(self, key):
         null = pygame.Surface((2,2))

@@ -12,7 +12,7 @@ class ExampleScene(Scene):
         super().__init__(app)
         self.test = Entity(self.app)
         self.test.pos = pygame.Vector2(0, 0)
-        test2 = Entity(self.app)
+        test2 = Entity(self.app, "grass_background")
         test2.pos = pygame.Vector2(64,64)
         self.player = Player(self.app)
         self.target_camera_pos = self.player.pos
@@ -27,7 +27,8 @@ class ExampleScene(Scene):
 
     def update(self):
         super().update()
-        self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.2)
+        self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
+        
         self.test.pos.x += 1  
 
 
