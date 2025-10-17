@@ -8,6 +8,10 @@ class AssetLoader:
         self.assets = {}
         self.fonts = {}
         self.load()
+        self.null = pygame.Surface((2,2))
+        pygame.draw.rect(self.null,(255, 0, 255),(0,0,1,1))
+        pygame.draw.rect(self.null,(255, 0, 255),(1,1,1,1))
+        self.null = pygame.transform.scale(self.null, (64, 64))
 
     def load(self):
         for dir in self.asset_dir:
@@ -19,8 +23,4 @@ class AssetLoader:
                     self.fonts[file.split(".")[0]] = pygame.font.Font(dir[0] + "/" + file)
                   
     def get(self, key):
-        null = pygame.Surface((2,2))
-        pygame.draw.rect(null,(255, 0, 255),(0,0,1,1))
-        pygame.draw.rect(null,(255, 0, 255),(1,1,1,1))
-        null = pygame.transform.scale(null, (64, 64))
-        return self.assets.get(key, null) 
+        return self.assets.get(key, self.null) 

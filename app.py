@@ -26,8 +26,9 @@ class App:
     def run(self):
         while self.running:
             self.check_events()
-            self.scenes[self.current_scene].update()
+            self.update()            
             self.draw()
+
 
     def check_events(self):       
         for event in pygame.event.get():

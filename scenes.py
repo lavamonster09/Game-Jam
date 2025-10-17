@@ -23,7 +23,7 @@ class ExampleScene(Scene):
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(btn1)
         self.add_entity(self.test,)
-        self.add_entity(test2)
+        #self.add_entity(test2)
         self.add_entity(self.player)
         self.add_entity(self.hud)
 
