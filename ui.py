@@ -25,6 +25,8 @@ class HUD(Entity):
         cutout_mask = pygame.mask.from_surface(self.health_image)
         self.cutout_image = cutout_mask.to_surface()
         self.cutout_image.set_colorkey('#FFFFFF')
+
+        self.target_health_pos = pygame.Vector2(33,33)
         
         self.player = player
         self.previous_health = 0
@@ -37,6 +39,7 @@ class HUD(Entity):
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
 
+        self.health_pos = pygame.Vector2(0,1)
     def get_relative_pos(self, surface: pygame.Surface, camera_pos: pygame.Vector2) -> pygame.Vector2:
         relative_pos = self.player.pos - camera_pos
         return relative_pos
@@ -48,8 +51,10 @@ class HUD(Entity):
 
     def draw_health(self, surface: pygame.Surface):
         if self.previous_health != self.player.health:
-            self.health_pos = self.get_missing_health()
-            self.cutout_health()
+            self.target_health_pos = self.get_missing_health()
+        self.cutout_health()
+        if self.target_health_pos != pygame.Vector2(0,0):
+            self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
 
         self.health_text = self.font.render(str(self.player.health), True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
