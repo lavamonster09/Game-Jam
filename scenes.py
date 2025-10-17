@@ -1,7 +1,6 @@
 from scene import Scene
 from entity import Entity
 import pygame
-from camera import Camera
 from player import Player
 from enemy import Enemy
 from ui import * 
@@ -17,20 +16,20 @@ class ExampleScene(Scene):
         self.player = Player(self.app)
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
-        
+        self.hud = HUD(self.app, self.player)
 
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(btn1)
         self.add_entity(self.test,)
         self.add_entity(test2)
         self.add_entity(self.player)
+        self.add_entity(self.hud)
 
     def update(self):
         super().update()
         self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
         
         self.test.pos.x += 1  
-
 
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)

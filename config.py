@@ -9,6 +9,5 @@ class Config:
             self.config = cfg["settings"] 
             data.close()
 
-    def get_key_code(self, key: str):
+    def get_key_code(self, key: str) -> int:
         return pygame.key.key_code(self.keybinds[key])
-
