@@ -3,12 +3,11 @@ from entity import *
 
 class Player(Entity):
     def __init__(self, app):
-        super().__init__(app, "knight_placeholder") 
+        super().__init__(app, "sheet_2_knight_placeholder")       
+        
         self.pos = pygame.Vector2(800, 450)
         self.health = 100
-        self.max_health = 100
         self.xp = 0
-        self.max_xp = 100
 
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -23,20 +22,12 @@ class Player(Entity):
         self.FRICTION_COEFF = 0.65
         self.ROLLNG_COEFF = 0.95
         self.friction_coeff = self.FRICTION_COEFF
-        self.MAX_VEL = 4
+        self.MAX_VEL = 2
+
         
         self.state = "idle"
 
         self.keybinds = self.app.cfg
-
-        self.total_level = 0
-
-        self.levels = {
-            "Strength": 0,
-            "Dexterity": 0,
-            "Vigor": 0,
-            "Endurance": 0,
-        }
 
         self.attributes["collidable"] = True
         self.attributes["damageable"] = True
@@ -77,22 +68,7 @@ class Player(Entity):
             self.attributes["damageable"] = True
             self.friction_coeff = self.FRICTION_COEFF
 
-
         self.pos += self.velocity
-
-    def level_up(self, stat):
-        self.total_level += 1
-        self.levels[stat] += 1
-
-        if stat == "Vigor":
-            self.max_health += 10
-        if stat == "Endurance":
-            self.speed_modifier += 0.1
-
-        if self.health + 20 <= self.max_health:
-            self.health += 20
-        self.max_xp += 20
-        self.xp = 0
 
     def update(self):
         super().update()

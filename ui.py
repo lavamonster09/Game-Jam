@@ -26,7 +26,7 @@ class HUD(Entity):
     def __init__(self, app, player):
         super().__init__(app, sprite="")
         self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
-        self.numbers = self.app.asset_loader.font.get("sheet_10_numbers")
+        self.numbers = self.app.asset_loader.get("sheet_10_numbers")
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")

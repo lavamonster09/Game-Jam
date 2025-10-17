@@ -16,8 +16,12 @@ class Entity:
             child.update()
 
     def get_rect(self) -> pygame.Rect:
-        rect = self.app.asset_loader.get(self.sprite).get_rect()
-        rect.topleft = self.pos.xy + self.offset
+        if type(self.app.asset_loader.get(self.sprite)) == list:
+            rect = self.app.asset_loader.get(self.sprite)[0].get_rect()
+            rect.topleft = self.pos.xy + self.offset
+        else:
+            rect = self.app.asset_loader.get(self.sprite).get_rect()
+            rect.topleft = self.pos.xy + self.offset
         return rect
     
     def get_screen_pos(self) -> pygame.Vector2:
@@ -25,6 +29,8 @@ class Entity:
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         sprite = self.app.asset_loader.get(self.sprite)
+        if type(sprite) == list:
+            sprite = sprite[0]
         screen_size = surface.get_size()
         self.offset = pygame.Vector2(screen_size)//2 - camera_pos
         if self.attributes.get("visible", False):
