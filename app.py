@@ -19,6 +19,7 @@ class App:
         self.asset_loader = asset_loader.AssetLoader(self.config["ASSET_DIR"])
         pygame.display.set_caption(self.name) 
         self.running = True
+        self.paused = False
 
         self.scenes = {}
         self.current_scene = ""

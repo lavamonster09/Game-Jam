@@ -35,10 +35,13 @@ class ExampleScene(Scene):
         self.add_entity(self.hud)
 
     def update(self):
-        super().update()
-        self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
-        
-        self.test.pos.x += 1  
+        if self.app.paused:
+            self.hud.update()
+        else:
+            super().update()
+            self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
+            
+            self.test.pos.x += 1  
 
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)
