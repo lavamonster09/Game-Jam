@@ -26,9 +26,9 @@ class ExampleScene(Scene):
         weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1, 15, 1)
         self.player.add_child(weapon)
 
-        btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
+        #btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(self.enemy_manager)
-        self.add_entity(btn1)
+        #self.add_entity(btn1)
         self.add_entity(self.test,)
         self.add_entity(test2)
         self.add_entity(self.player)

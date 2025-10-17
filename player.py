@@ -23,11 +23,13 @@ class Player(Entity):
         self.FRICTION_COEFF = 0.65
         self.ROLLNG_COEFF = 0.95
         self.friction_coeff = self.FRICTION_COEFF
-        self.MAX_VEL = 2
+        self.MAX_VEL = 4
         
         self.state = "idle"
 
         self.keybinds = self.app.cfg
+
+        self.total_level = 0
 
         self.levels = {
             "Strength": 0,
@@ -77,6 +79,20 @@ class Player(Entity):
 
 
         self.pos += self.velocity
+
+    def level_up(self, stat):
+        self.total_level += 1
+        self.levels[stat] += 1
+
+        if stat == "Vigor":
+            self.max_health += 10
+        if stat == "Endurance":
+            self.speed_modifier += 0.1
+
+        if self.health + 20 <= self.max_health:
+            self.health += 20
+        self.max_xp += 20
+        self.xp = 0
 
     def update(self):
         super().update()

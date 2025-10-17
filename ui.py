@@ -3,28 +3,37 @@ from enemy import Enemy
 import pygame
 
 class Button(Entity):
-    def __init__(self, app, on_click, on_click_args= [], sprite="none"):
+    def __init__(self, app, on_click, sprite="none", on_click_args= []):
         super().__init__(app, sprite)
         self.on_click = on_click
         self.on_click_args = on_click_args
+        self.surf = self.app.asset_loader.get(sprite)
+        self.current_surf = self.surf[0]
+
+    def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
+        surface.blit(self.current_surf, self.current_surf.get_rect(topleft = self.pos))
         
     def update(self):
         super().update()
-        if self.get_rect().collidepoint(pygame.mouse.get_pos()):
-            if pygame.mouse.get_just_pressed()[0]:
+        self.current_surf = self.surf[0]
+        if self.current_surf.get_rect(topleft= self.pos).collidepoint(pygame.mouse.get_pos()):
+            if pygame.mouse.get_just_released()[0]:
                 self.on_click(*self.on_click_args)
+            if pygame.mouse.get_pressed()[0]:
+                self.current_surf = self.surf[1]
 
 class HUD(Entity):
     def __init__(self, app, player):
         super().__init__(app, sprite="")
         self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
+        self.numbers = self.app.asset_loader.font.get("sheet_10_numbers")
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("CURSOR2")
         self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
+        self.level_menu = self.app.asset_loader.get("level_up_menu")
         
-
         pygame.mouse.set_visible(False)
 
         cutout_mask = pygame.mask.from_surface(self.health_image)
@@ -42,7 +51,7 @@ class HUD(Entity):
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
-        self.LEVEL_BUTTON_OFFSET = pygame.Vector2(160, 80)
+        self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
         self.LEVEL_BUTTON_STEP = 64
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
@@ -68,7 +77,6 @@ class HUD(Entity):
         self.cutout_health()
         if self.target_health_pos != pygame.Vector2(0,0):
             self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
-
 
         self.health_text = self.font.render(f"{round(self.player.health * 100 / self.player.max_health)}", True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
@@ -141,20 +149,23 @@ class HUD(Entity):
 
     def make_level_popup(self):
         buttons = [
-            Button(self.app, self.level_up, "Strength", "level_up_button"),
-            Button(self.app, self.level_up, "Dexterity", "level_up_button"),
-            Button(self.app, self.level_up, "Vigor", "level_up_button"),
-            Button(self.app, self.level_up, "Endurance", "level_up_button")
+            Button(self.app, self.level_up, "sheet_2_level_up_button", ["Strength"]),
+            Button(self.app, self.level_up, "sheet_2_level_up_button", ["Dexterity"]),
+            Button(self.app, self.level_up,  "sheet_2_level_up_button", ["Vigor"]),
+            Button(self.app, self.level_up,  "sheet_2_level_up_button", ["Endurance"])
         ]
 
         for i in range(0, 4):
             buttons[i].pos = self.LEVEL_MENU_OFFSET + (self.LEVEL_BUTTON_OFFSET.x, self.LEVEL_BUTTON_OFFSET.y + i * self.LEVEL_BUTTON_STEP)
+            print(buttons[i].pos)
             self.add_child(buttons[i])
 
     def level_up(self, stat: str):
-        self.player.levels[stat] += 1
+        self.player.level_up(stat)
         self.level_available = False
-        print(stat)
+        self.app.paused = False
+        for child in self.children:
+            self.remove_child(child)
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         self.pos = self.get_relative_pos(surface, camera_pos)
@@ -166,3 +177,7 @@ class HUD(Entity):
             self.draw_level_popup(surface, camera_pos)
         surface.blit(self.hud_image, self.pos)
         self.draw_cursor(surface)
+
+    def update(self):
+        for child in self.children:
+            child.update()
