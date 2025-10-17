@@ -21,6 +21,8 @@ class HUD(Entity):
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("CURSOR2")
+        self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
+        
 
         pygame.mouse.set_visible(False)
 
@@ -86,7 +88,10 @@ class HUD(Entity):
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
         self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
-        surface.blit(self.cursor_image, self.cursor_rect)
+        if not pygame.mouse.get_pressed()[0]:
+            surface.blit(self.cursor_image, self.cursor_rect)
+        else:
+            surface.blit(self.down_cursor ,self.cursor_rect)
 
     def cutout_health(self):
         size = self.health_image.size

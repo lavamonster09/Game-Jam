@@ -23,8 +23,7 @@ class ExampleScene(Scene):
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
         self.hud.z_index = 1000000
-        weapon = MeleeWeapon(self.app, 1, 1, 10, 1)
-        weapon.damage_rect = pygame.Rect(0,0,100,100)
+        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1, 15, 1)
         self.player.add_child(weapon)
 
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
