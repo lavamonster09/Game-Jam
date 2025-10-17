@@ -60,7 +60,6 @@ class HUD(Entity):
         if self.target_health_pos != pygame.Vector2(0,0):
             self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
 
-        print(self.target_health_pos, self.health_pos)
 
         self.health_text = self.font.render(str(self.player.health), True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
@@ -74,8 +73,9 @@ class HUD(Entity):
         if self.previous_xp != self.player.xp:
             self.target_xp_pos = self.get_missing_xp()
         self.cutout_xp()
-        if self.target_xp_pos != pygame.Vector2(0,0):
-            self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05) 
+        if self.target_xp_pos == pygame.Vector2(0,0):
+            self.target_xp_pos = pygame.Vector2(0.1,0)
+        self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05) 
 
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
 
@@ -113,7 +113,7 @@ class HUD(Entity):
     
     def get_missing_xp(self) -> pygame.Vector2:
         percent_missing_xp = 1 - self.player.xp / self.player.max_xp
-        bar_size = self.xp_image.get_width()
+        bar_size = self.xp_image.get_width() 
         xp_pos = pygame.Vector2(bar_size * percent_missing_xp, 0)
         return xp_pos
 
