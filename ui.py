@@ -28,6 +28,7 @@ class HUD(Entity):
         
         self.player = player
         self.previous_health = 0
+        self.previous_xp = -1
         self.pos = self.player.pos
 
         self.clock = self.app.clock
@@ -59,9 +60,12 @@ class HUD(Entity):
         self.previous_health = self.player.health
 
     def draw_xp(self, surface: pygame.Surface):
-        percent_xp = self.player.xp / 100
-        self.xp_rect = self.xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET))
-        surface.blit(self.xp_image, self.xp_rect)
+        if self.previous_xp != self.player.xp:
+            self.cutout_xp()
+
+        surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
+
+        self.previous_xp = self.player.xp
 
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
@@ -77,6 +81,18 @@ class HUD(Entity):
         self.new_health_image.blit(self.cutout_image, self.cutout_image.get_rect(topleft= -self.health_pos))
         self.new_health_image.blit(rect_cutout, rect_cutout.get_rect(bottomright= size))
         self.new_health_image.set_colorkey('#000000')
+
+    def cutout_xp(self):
+        bar_size = self.xp_image.get_size()
+        percent_missing_xp = 1 - self.player.xp / self.player.max_xp
+        cutout_size = (bar_size[0] * percent_missing_xp, bar_size[1])
+        print(cutout_size)
+        cutout_surf = pygame.Surface(cutout_size)
+        cutout_surf.fill('#000000')
+        self.new_xp_image = self.xp_image.copy()
+        self.new_xp_image.blit(cutout_surf, cutout_surf.get_rect(bottomright= bar_size))
+        self.new_xp_image.set_colorkey('#000000')
+
 
     def get_missing_health(self) -> pygame.Vector2:
         percent_health_missing = 1 - self.player.health / 100

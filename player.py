@@ -3,11 +3,11 @@ from entity import *
 
 class Player(Entity):
     def __init__(self, app):
-        super().__init__(app, "knight_placeholder")       
-        
+        super().__init__(app, "knight_placeholder") 
         self.pos = pygame.Vector2(800, 450)
         self.health = 100
         self.xp = 0
+        self.max_xp = 100
 
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -23,7 +23,6 @@ class Player(Entity):
         self.ROLLNG_COEFF = 0.95
         self.friction_coeff = self.FRICTION_COEFF
         self.MAX_VEL = 2
-
         
         self.state = "idle"
 
