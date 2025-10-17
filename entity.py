@@ -2,7 +2,7 @@ import pygame
 
 class Entity:
     def __init__(self,app,sprite = "none"):
-        self.children = {}
+        self.children = [] 
         self.attributes = {"visible":True}
         self.sprite = sprite
         self.app = app
@@ -11,6 +11,7 @@ class Entity:
 
     def update(self):
         for child in self.children:
+            child.pos = self.pos
             child.update()
 
     def get_rect(self) -> pygame.Rect:
@@ -25,10 +26,10 @@ class Entity:
         if self.attributes.get("visible", False):
             surface.blit(sprite, self.pos.xy + self.offset)
             for child in self.children:
-                child.draw(surface)
+                child.draw(surface, camera_pos)
     
-    def add_child(self, entity, key):
-        self.children[key] = entity
+    def add_child(self, entity):
+        self.children.append(entity)
 
     def remove_child(self, key):
         self.children.pop(key)

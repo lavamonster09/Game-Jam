@@ -12,6 +12,9 @@ class Enemy(Entity):
         self.damage = 10
         self.velocity = pygame.Vector2(0,0)
         self.attributes["collidable"] = True
+        self.attributes["damageable"] = True
+        self.health = 10
+        self.alive = True
 
     def update(self):
         super().update()
@@ -23,3 +26,9 @@ class Enemy(Entity):
         self.pos += self.velocity
         if self.pos.distance_to(self.player.pos) <= 64:
             self.player.damage(self.damage)
+
+    def damage(self, damage:float):
+        self.health -= damage
+        if self.health <= 0:
+            self.alive = False
+            self.attributes["visible"] = False

@@ -2,23 +2,38 @@ import pygame
 import math
 from entity import Entity
 
-class BaseWeapon(Entity):
+class MeleWeapon(Entity):
     def __init__(self, app, range: int, damage: int):
         super().__init__(app)
         self.range = range
         self.damage = damage
+        self.attack_time = 30
+        self.attack_counter = 30
+        self. damage_rect = None
+    def update(self):        
+        super().update()
+        if self.attack_time != self.attack_counter:
+            self.attack_counter += 1
+        else:
+            if pygame.mouse.get_just_pressed()[0]:
+                self.attack()
 
-    # def attack(self, surface: pygame.Surface, rel_mouse_pos: pygame.Vector2, player_pos: pygame.Vector2):
-    #     angle_to_mouse = math.atan2(rel_mouse_pos.y, rel_mouse_pos.x)
-    #     start_angle = angle_to_mouse + math.pi / 3
-    #     stop_angle = angle_to_mouse - math.pi / 3
-    #     pygame.draw.arc(surface, '#FFFFFF', pygame.Rect(player_pos, (self.range, self.range)), start_angle, stop_angle, self.range)
+    def attack(self):
+        print("attack")
+        self.attack_counter = 0 
+        for entity in self.app.get_current_scene().entities :
+            self.rect = self.get_rect()
+            if self.get_rect().colliderect(entity.get_rect()) and entity.attributes.get("damageable", False): 
+                entity.damage(1)
 
-    # def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
-    #     sprite = self.app.asset_loader.get(self.sprite)
-    #     screen_size = surface.get_size()
-    #     self.offset = pygame.Vector2(screen_size)//2 - camera_pos
-    #     pygame.draw.arc(surface, '#FFFFFF', pygame.Rect(player_pos, (self.range, self.range)), start_angle, stop_angle, self.range)
-    #     if self.visible:
-    #         for child in self.children:
-    #             child.draw(surface)
+    def draw(self, surface, camera_pos):
+        if self.attack_counter < self.attack_time:
+            pygame.draw.rect(surface, (255,255,255), self.rect)
+        return super().draw(surface, camera_pos)
+
+    def get_rect(self):
+        rect = super().get_rect()
+        dir = pygame.Vector2(pygame.mouse.get_pos()[0] / self.app.width * 2 - 1, pygame.mouse.get_pos()[1] / self.app.height * 2 - 1)
+        print(dir) 
+        rect.center = self.pos + dir * 100
+        return rect
