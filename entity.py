@@ -35,4 +35,4 @@ class Entity:
         self.children.append(entity)
 
     def remove_child(self, key):
-        self.children.pop(key)
+        self.children.remove(key)

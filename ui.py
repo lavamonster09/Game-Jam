@@ -91,7 +91,6 @@ class HUD(Entity):
         bar_size = self.xp_image.get_size()
         percent_missing_xp = 1 - self.player.xp / self.player.max_xp
         cutout_size = (bar_size[0] * percent_missing_xp, bar_size[1])
-        print(cutout_size)
         cutout_surf = pygame.Surface(cutout_size)
         cutout_surf.fill('#000000')
         self.new_xp_image = self.xp_image.copy()

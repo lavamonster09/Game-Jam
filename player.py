@@ -28,6 +28,13 @@ class Player(Entity):
 
         self.keybinds = self.app.cfg
 
+        self.levels = {
+            "Strength": 0,
+            "Dexterity": 0,
+            "Endurance": 0,
+            "Vigor": 0,
+        }
+
         self.attributes["collidable"] = True
         self.attributes["damageable"] = True
 

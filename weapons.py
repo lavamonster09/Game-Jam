@@ -22,7 +22,7 @@ class MeleeWeapon(Entity):
 
     def attack(self):
         self.attack_counter = 0 
-        for entity in self.app.get_current_scene().entities :
+        for entity in self.app.get_current_scene().enemy_manager.children:
             self.rect = self.get_rect()
             if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
                 entity.hurt(self.damage, self.knockback)

@@ -3,6 +3,7 @@ from entity import Entity
 import pygame
 from player import Player
 from enemy import Enemy
+from enemy_manager import EnemyManager
 from weapons import MeleeWeapon
 from ui import * 
 import random
@@ -15,6 +16,7 @@ class ExampleScene(Scene):
         test2 = Entity(self.app, "grass_background")
         test2.pos = pygame.Vector2(64,64)
         self.player = Player(self.app)
+        self.enemy_manager = EnemyManager(self.app, self.player)
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
@@ -23,6 +25,7 @@ class ExampleScene(Scene):
         self.player.add_child(weapon)
 
         btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
+        self.add_entity(self.enemy_manager)
         self.add_entity(btn1)
         self.add_entity(self.test,)
         self.add_entity(test2)
