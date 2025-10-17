@@ -22,10 +22,9 @@ class HUD(Entity):
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.cursor_image = self.app.asset_loader.get("null")
 
-        self.new_health_image = self.app.asset_loader.get("full_health")
         cutout_mask = pygame.mask.from_surface(self.health_image)
         self.cutout_image = cutout_mask.to_surface()
-        self.cutout_image.set_colorkey((255,255,255))
+        self.cutout_image.set_colorkey('#FFFFFF')
         
         self.player = player
         self.previous_health = 0
@@ -49,13 +48,10 @@ class HUD(Entity):
     def draw_health(self, surface: pygame.Surface):
         if self.previous_health != self.player.health:
             self.health_pos = self.get_missing_health()
-            self.new_health_image = self.health_image.copy()
+            self.cutout_health()
 
         self.health_text = self.font.render(str(self.player.health), True, '#00A494')
         self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
-
-        self.new_health_image.blit(self.cutout_image, self.cutout_image.get_rect(topleft= -self.health_pos))
-        self.new_health_image.set_colorkey((0,0,0))
 
         surface.blit(self.new_health_image, self.pos + self.health_pos + self.HEALTH_BAR_OFFSET)
         surface.blit(self.health_text, self.health_rect)
@@ -72,9 +68,15 @@ class HUD(Entity):
         self.cursor_rect = self.cursor_image.get_rect(center= mouse_pos)
         surface.blit(self.cursor_image, self.cursor_rect)
 
-    def cutout_health(self) -> pygame.Mask:
-        bar_mask = pygame.mask.from_surface(self.health_image).invert
-        return bar_mask
+    def cutout_health(self):
+        size = self.health_image.size
+        rect_size = (size[0], self.health_pos.y)
+        rect_cutout = pygame.Surface(rect_size)
+        rect_cutout.fill('#000000')
+        self.new_health_image = self.health_image.copy()
+        self.new_health_image.blit(self.cutout_image, self.cutout_image.get_rect(topleft= -self.health_pos))
+        self.new_health_image.blit(rect_cutout, rect_cutout.get_rect(bottomright= size))
+        self.new_health_image.set_colorkey('#000000')
 
     def get_missing_health(self) -> pygame.Vector2:
         percent_health_missing = 1 - self.player.health / 100
