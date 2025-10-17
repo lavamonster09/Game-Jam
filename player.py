@@ -9,6 +9,7 @@ class Player(Entity):
         self.max_health = 100
         self.xp = 0
         self.max_xp = 100
+        self.total_kills = 0
 
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -86,6 +87,7 @@ class Player(Entity):
 
         if stat == "Vigor":
             self.max_health += 10
+            self.health += 10
         if stat == "Endurance":
             self.speed_modifier += 0.1
 

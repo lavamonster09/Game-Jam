@@ -26,7 +26,7 @@ class HUD(Entity):
     def __init__(self, app, player):
         super().__init__(app, sprite="")
         self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
-        self.numbers = self.app.asset_loader.font.get("sheet_10_numbers")
+        self.numbers = self.app.asset_loader.get("sheet_10_numbers")
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
@@ -47,9 +47,10 @@ class HUD(Entity):
 
         self.clock = self.app.clock
 
-        self.HEALTH_TEXT_OFFSET = pygame.Vector2(64, 300)
+        self.HEALTH_TEXT_OFFSET = pygame.Vector2(65, 300)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
+        self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 40)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
         self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
         self.LEVEL_BUTTON_STEP = 64
@@ -68,7 +69,7 @@ class HUD(Entity):
     
     def draw_fps(self, surface: pygame.Surface):
         self.fps_text = self.font.render(str(round(self.clock.get_fps())), True, '#00A494')
-        self.fps_rect = self.fps_text.get_rect(topright = (1600, 0))
+        self.fps_rect = self.fps_text.get_rect(bottomright = (1600, 900))
         surface.blit(self.fps_text, self.fps_rect)
 
     def draw_health(self, surface: pygame.Surface):
@@ -78,8 +79,8 @@ class HUD(Entity):
         if self.target_health_pos != pygame.Vector2(0,0):
             self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
 
-        self.health_text = self.font.render(f"{round(self.player.health * 100 / self.player.max_health)}", True, '#00A494')
-        self.health_rect = self.health_text.get_rect(center= (self.pos + self.HEALTH_TEXT_OFFSET))
+        self.health_text = self.make_text(str(round(self.player.health * 100 / self.player.max_health)))
+        self.health_rect = self.health_text.get_rect(midtop= (self.pos + self.HEALTH_TEXT_OFFSET))
 
         surface.blit(self.new_health_image, self.pos + self.health_pos + self.HEALTH_BAR_OFFSET)
         surface.blit(self.health_text, self.health_rect)
@@ -100,6 +101,10 @@ class HUD(Entity):
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
 
         self.previous_xp = self.player.xp
+
+    def draw_kill_count(self, surface: pygame.Surface):
+        self.kill_count = self.make_text(str(self.player.total_kills))
+        surface.blit(self.kill_count, self.kill_count.get_rect(topleft = (self.pos + self.KILL_COUNT_OFFSET)))
 
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
@@ -146,6 +151,13 @@ class HUD(Entity):
         bar_size = self.xp_image.get_width() 
         xp_pos = pygame.Vector2(bar_size * percent_missing_xp, 0)
         return xp_pos
+    
+    def make_text(self, num: str) -> pygame.Surface:
+        surf = pygame.Surface((32 * len(num), 32))
+        surf.set_colorkey('#000000')
+        for i in range(0, len(num)):
+            surf.blit(self.numbers[int(num[i])], (i * 32, 0))
+        return surf     
 
     def make_level_popup(self):
         buttons = [
@@ -171,6 +183,7 @@ class HUD(Entity):
         self.pos = self.get_relative_pos(surface, camera_pos)
         self.draw_xp(surface)
         self.draw_health(surface)
+        self.draw_kill_count(surface)
         self.draw_fps(surface)
         if self.level_available == True:
             self.app.paused = True

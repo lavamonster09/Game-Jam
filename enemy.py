@@ -32,5 +32,6 @@ class Enemy(Entity):
         self.health -= dmg
         if self.health <= 0:
             self.alive = False
+            self.player.total_kills += 1
             self.attributes["visible"] = False
         self.velocity = -self.velocity * knockback
