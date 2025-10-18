@@ -35,8 +35,8 @@ class Entity:
         self.offset = pygame.Vector2(screen_size)//2 - camera_pos
         if self.attributes.get("visible", False):
             surface.blit(sprite, self.pos.xy + self.offset)
-            for child in self.children:
-                child.draw(surface, camera_pos)
+        for child in self.children:
+            child.draw(surface, camera_pos)
     
     def add_child(self, entity):
         self.children.append(entity)

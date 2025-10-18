@@ -15,6 +15,7 @@ class EnemyManager(Entity):
         self.boss_dead = False
 
         self.ROUND_TIMER = 600
+        self.attributes["visible"] = False 
         self.SPAWN_DIST = 900
 
     def spawn_wave(self):
