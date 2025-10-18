@@ -43,7 +43,8 @@ class MeleeWeapon(Entity):
                 surface.blit(frame, self.rect.topleft)
                 self.damage_rect = frame.get_rect() 
             if self.attack_counter == self.attack_time // 2:
-                pygame.draw.rect(surface, (255,255,255), self.rect, 1)
+                pass
+                #pygame.draw.rect(surface, (255,255,255), self.rect, 1)
         return super().draw(surface, camera_pos)
 
     def get_rect(self):

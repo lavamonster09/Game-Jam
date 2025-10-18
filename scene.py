@@ -5,7 +5,7 @@ class Scene:
         self.entities = [] 
         self.draw_queue = []
         self.app = app
-        self.camera_pos = pygame.Vector2(0,0)
+        self.camera_pos = pygame.Vector2(app.screen.width//2,app.screen.height//2)
 
     def draw(self, screen: pygame.Surface):
         self.entities.sort(key = lambda x: x.z_index)

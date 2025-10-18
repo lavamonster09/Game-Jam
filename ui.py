@@ -31,8 +31,7 @@ class HUD(Entity):
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
-        self.cursor_image = self.app.asset_loader.get("CURSOR2")
-        self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
+
         self.level_menu = self.app.asset_loader.get("level_up_menu")
         
         pygame.mouse.set_visible(False)

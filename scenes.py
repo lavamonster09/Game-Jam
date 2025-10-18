@@ -60,3 +60,29 @@ class ExampleScene(Scene):
             screen.blit(grass, ((offset[0] + self.player.pos.x // self.app.width) * self.app.width - self.camera_pos.x, (offset[1] + self.player.pos.y // self.app.height) * self.app.height - self.camera_pos.y))
         return super().draw(screen)
     
+
+class MainMenu(Scene):
+    def __init__(self, app):
+        super().__init__(app)
+        bg = Entity(self.app, "grass_background")
+        bg.z_index = -1
+        menu = Entity(self.app, "start_menu")
+        self.add_entity(bg)
+        self.add_entity(menu)
+        self.cursor_image = self.app.asset_loader.get("CURSOR2")
+        self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
+
+    def update(self):
+        return super().update()
+    
+    def draw(self, screen):
+        super().draw(screen)
+        self.draw_cursor(screen)
+    
+    def draw_cursor(self, surface: pygame.Surface):
+        mouse_pos = pygame.mouse.get_pos()
+        self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
+        if not pygame.mouse.get_pressed()[0]:
+            surface.blit(self.cursor_image, self.cursor_rect)
+        else:
+            surface.blit(self.down_cursor ,self.cursor_rect)
