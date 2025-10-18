@@ -13,7 +13,8 @@ def main():
     scenes = {
         "test": ExampleScene(game),
         "death": ExampleScene(game),
-        "main_menu": MainMenu(game)
+        "main_menu": MainMenu(game),
+        "weapon_select": WeaponSelectScene(game)
     }
 
     game.scenes = scenes

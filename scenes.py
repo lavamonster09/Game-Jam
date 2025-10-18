@@ -63,17 +63,32 @@ class ExampleScene(Scene):
 
 class WeaponSelectScene(Scene):
     def __init__(self, app):
-        super().__init(app)
+        super().__init__(app)
         weapons = {
             "Dex": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 3, 1)
         }
+        
+        bg = Entity(self.app, "grass_background")
+        bg.z_index = -1
+        menu = Entity(self.app, "weapon_select_menu")
+        btn1 = Button(self.app , )
 
+        self.add_entity(bg)
+        self.add_entity(menu)
 class MainMenu(Scene):
     def __init__(self, app):
         super().__init__(app)
         bg = Entity(self.app, "grass_background")
         bg.z_index = -1
         menu = Entity(self.app, "start_menu")
+        new_run_button = Button(self.app, self.btn_new_run, "sheet_2_startrun_button")
+        new_run_button.pos = pygame.Vector2(272 * 2,160 * 2)
+        new_run_button.z_index = 100000
+        exit_button = Button(self.app, self.btn_exit, "sheet_2_exit_button")
+        exit_button.pos = pygame.Vector2(272 * 2, 16 * 16 * 2)
+        exit_button.z_index = 100000
+        self.add_entity(exit_button)
+        self.add_entity(new_run_button)
         self.add_entity(bg)
         self.add_entity(menu)
         self.cursor_image = self.app.asset_loader.get("CURSOR2")
@@ -85,6 +100,12 @@ class MainMenu(Scene):
     def draw(self, screen):
         super().draw(screen)
         self.draw_cursor(screen)
+
+    def btn_new_run(self):
+        self.app.current_scene = "weapon_select"
+
+    def btn_exit(self):
+        self.app.running = False
     
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
