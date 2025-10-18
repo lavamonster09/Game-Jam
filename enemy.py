@@ -13,7 +13,7 @@ class Enemy(Entity):
         self.velocity = pygame.Vector2(0,0)
         self.attributes["collidable"] = True
         self.attributes["player_damageable"] = True
-        self.health = 3
+        self.health = 5
         self.alive = True
         self.boss = False
         self.held_xp = 1

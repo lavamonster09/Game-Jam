@@ -18,7 +18,8 @@ class ExampleScene(Scene):
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
         self.hud.z_index = 1000000
-        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10)
+
+        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 3, 1)
         self.player.add_child(weapon)
 
         #btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
@@ -59,7 +60,13 @@ class ExampleScene(Scene):
         for offset in offsets:
             screen.blit(grass, ((offset[0] + self.player.pos.x // self.app.width) * self.app.width - self.camera_pos.x, (offset[1] + self.player.pos.y // self.app.height) * self.app.height - self.camera_pos.y))
         return super().draw(screen)
-    
+
+class WeaponSelectScene(Scene):
+    def __init__(self, app):
+        super().__init(app)
+        weapons = {
+            "Dex": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 3, 1)
+        }
 
 class MainMenu(Scene):
     def __init__(self, app):

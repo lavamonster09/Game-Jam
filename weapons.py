@@ -3,7 +3,7 @@ import math
 from entity import Entity
 
 class MeleeWeapon(Entity):
-    def __init__(self, app, sprite, range: int, damage: int, attack_time: int, knockback: float):
+    def __init__(self, app, sprite, range: int, damage: int, attack_time: int, knockback: float, str_scaling: int, dex_scaling: int):
         super().__init__(app)
         self.sprite = sprite
         self.range = range
@@ -15,14 +15,32 @@ class MeleeWeapon(Entity):
         self.attributes["visible"] = False
         self.attack_angle = 0
         self.rect = pygame.Rect()
+        self.str_mul = 0
+        self.dex_mul = 0
+
+        self.DAMAGE_MUL = 0.5
+
+        self.scaling = {
+            "Strength": str_scaling,
+            "Dexterity": dex_scaling,
+        }
+
     def update(self):        
         super().update()
         if self.attack_time != self.attack_counter:
             self.attack_counter += 1
             if self.attack_counter == self.attack_time//2:
+                self.player = self.get_parent()
+                if self.player.levels["Strength"] != 0:
+                    self.str_mul = math.log(self.player.levels["Strength"], 4) + 1
+                if self.player.levels["Dexterity"] != 0:
+                    self.dex_mul = math.log(self.player.levels["Dexterity"], 4) + 1
+                str_dmg = self.scaling["Strength"] * self.str_mul * self.DAMAGE_MUL
+                dex_dmg = self.scaling["Dexterity"] * self.dex_mul * self.DAMAGE_MUL
+                damage_scaled = round(self.damage + str_dmg + dex_dmg, 2)
                 for entity in self.app.get_current_scene().enemy_manager.children:
                     if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
-                        entity.hurt(self.damage, self.knockback)
+                        entity.hurt(damage_scaled, self.knockback)
 
         else:
             if pygame.mouse.get_just_pressed()[0]:
@@ -54,6 +72,5 @@ class MeleeWeapon(Entity):
             rect = self.damage_rect
         else:
             rect = pygame.Rect(0,0,0,0)
-        print(self.pos)
         rect.center = self.pos + dir * 100
         return rect

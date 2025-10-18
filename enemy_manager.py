@@ -9,12 +9,16 @@ class EnemyManager(Entity):
         super().__init__(app)
         self.player = player
         self.rounds = 0
-        self.time = 0
+        self.time = 600
         self.wave_cleared = False
         self.boss_round = False
         self.boss_dead = False
-        self.attributes["visible"] = False 
-        self.SPAWN_DIST = 900
+        self.attributes["visible"] = False
+        self.health_mul = 1
+
+        self.ROUND_TIMER = 600
+        self.SPAWN_DIST = 1000
+        self.BOSS_INTERVAL = 5
 
     def spawn_wave(self):
         count = 0
@@ -22,11 +26,12 @@ class EnemyManager(Entity):
             self.spawn_enemy()
             count += 1
 
-        if self.rounds % 3 == 0 and self.rounds > 0:
+        if self.rounds % self.BOSS_INTERVAL == 0 and self.rounds > 0:
             self.boss_round = True
 
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)
+        enemy.health *= self.health_mul
         rnd_dir = random.randrange(0, 360)
         enemy.pos = self.player.pos + pygame.Vector2(1, 0).rotate(rnd_dir) * self.SPAWN_DIST
 
@@ -35,7 +40,7 @@ class EnemyManager(Entity):
     def spawn_boss(self):
         boss = Enemy(self.app, self.player)
         boss.boss = True
-        boss.health *= 3
+        boss.health *= 3 * self.health_mul
         boss.damage *= 2
         boss.held_xp = 10
         boss.pos = self.player.pos + pygame.Vector2(0, -1) * self.SPAWN_DIST
@@ -43,6 +48,7 @@ class EnemyManager(Entity):
         self.add_child(boss)
 
     def check_children(self):
+        self.time += 1
         kill_list = []
         for child in self.children:
             if not child.alive:
@@ -55,12 +61,14 @@ class EnemyManager(Entity):
             self.spawn_xp(i.held_xp, i.pos)
             self.remove_child(i)
 
-        if len(self.children) == 0:
+        if self.time >= self.ROUND_TIMER:
+            self.time = 0
             if self.boss_dead or not self.boss_round:
                 self.wave_cleared = True
                 self.boss_dead = False
             else:
                 self.spawn_boss()
+                self.health_mul += 2
 
     def spawn_xp(self, count: int, pos: pygame.Vector2):
         for i in range(count):
