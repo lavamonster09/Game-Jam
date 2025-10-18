@@ -42,7 +42,6 @@ class App:
                 pygame.quit()
                 self.running = False
 
-
     def draw(self):
         self.screen.fill((0,0,0))
         self.scenes[self.current_scene].draw(self.screen)

@@ -35,8 +35,7 @@ class ExampleScene(Scene):
             self.hud.update()
         else:
             super().update()
-            if self.target_camera_pos != pygame.Vector2(0,0):
-                self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
+            self.camera_pos = self.target_camera_pos.smoothstep(self.camera_pos, 0.65)
             
             self.test.pos.x += 1  
 

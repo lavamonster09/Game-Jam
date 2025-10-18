@@ -43,7 +43,7 @@ class HUD(Entity):
 
         self.player = player
         self.previous_health = 0
-        self.previous_xp = -1
+        self.previous_xp = 1
         self.pos = self.player.pos
 
         self.clock = self.app.clock
@@ -82,8 +82,7 @@ class HUD(Entity):
             self.current_health_text = self.make_text(str(self.player.health))
             self.max_health_text = self.make_text(str(self.player.max_health))
         self.cutout_health()
-        if self.target_health_pos != pygame.Vector2(0,0):
-            self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
+        self.health_pos = self.health_pos.smoothstep(self.target_health_pos, 0.15)
 
         self.current_health_rect = self.current_health_text.get_rect(midtop= (self.pos + self.HEALTH_TEXT_OFFSET))
         self.max_health_rect = self.max_health_text.get_rect(midbottom= (self.pos + self.MAX_HEALTH_TEXT_OFFSET))
@@ -101,9 +100,7 @@ class HUD(Entity):
                 self.level_available = True
                 self.make_level_popup()
         self.cutout_xp()
-        if self.target_xp_pos == pygame.Vector2(0,0):
-            self.target_xp_pos = pygame.Vector2(0.001,0)
-        self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05) 
+        self.xp_pos = self.xp_pos.smoothstep(self.target_xp_pos, 0.15) 
 
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
 
@@ -210,7 +207,7 @@ class HUD(Entity):
             self.remove_child(child)
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
-        self.pos = self.get_relative_pos(surface, camera_pos)
+        self.pos = -self.get_relative_pos(surface, camera_pos)
         self.draw_xp(surface)
         self.draw_health(surface)
         self.draw_kill_count(surface)
