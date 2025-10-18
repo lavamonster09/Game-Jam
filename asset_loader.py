@@ -27,7 +27,6 @@ class AssetLoader:
                             surf.set_colorkey((0,0,0))
                             images.append(surf)
                         self.assets[file.split(".")[-2]] = images
-                        print(self.assets)
                     else:
                         image = pygame.image.load(dir[0] + "/" + file)
                         self.assets[file.split(".")[0]] = pygame.transform.scale(image, (image.width * 2, image.height * 2)).convert_alpha()
