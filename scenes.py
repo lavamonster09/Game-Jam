@@ -63,10 +63,21 @@ class ExampleScene(Scene):
 
 class WeaponSelectScene(Scene):
     def __init__(self, app):
-        super().__init(app)
-        weapons = {
-            "Dex": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 3, 1)
+        super().__init__(app)
+        self.weapons = {
+            "Dex Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1.5, 20, 10, 1, 3),
+            "Qua Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1.5, 2, 15, 15, 2, 2),
+            "Str Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 2, 2.5, 10, 20, 1, 3),
+            "Dex Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
+            "Qua Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 2, 2),
+            "Str Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
         }
+
+    def update(self):
+        super().update()
+
+    def draw(self, screen):
+        super().draw(screen)
 
 class MainMenu(Scene):
     def __init__(self, app):
@@ -76,11 +87,9 @@ class MainMenu(Scene):
         menu = Entity(self.app, "start_menu")
         self.add_entity(bg)
         self.add_entity(menu)
-        self.cursor_image = self.app.asset_loader.get("CURSOR2")
-        self.down_cursor = self.app.asset_loader.get("CURSOR2_down") 
 
     def update(self):
-        return super().update()
+        super().update()
     
     def draw(self, screen):
         super().draw(screen)

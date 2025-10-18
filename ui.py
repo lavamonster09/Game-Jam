@@ -122,13 +122,13 @@ class HUD(Entity):
         
         surface.blit(time_played, time_played.get_rect(midleft = (self.pos + self.TIMER_OFFSET)))
 
-    def draw_cursor(self, surface: pygame.Surface):
-        mouse_pos = pygame.mouse.get_pos()
-        self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
-        if not pygame.mouse.get_pressed()[0]:
-            surface.blit(self.cursor_image, self.cursor_rect)
-        else:
-            surface.blit(self.down_cursor ,self.cursor_rect)
+    # def draw_cursor(self, surface: pygame.Surface):
+    #     mouse_pos = pygame.mouse.get_pos()
+    #     self.cursor_rect = self.cursor_image.get_rect(topleft= mouse_pos)
+    #     if not pygame.mouse.get_pressed()[0]:
+    #         surface.blit(self.cursor_image, self.cursor_rect)
+    #     else:
+    #         surface.blit(self.down_cursor ,self.cursor_rect)
 
     def draw_level_popup(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         surface.blit(self.new_level_menu, self.new_level_menu.get_rect(topleft= self.LEVEL_MENU_OFFSET))
@@ -216,7 +216,7 @@ class HUD(Entity):
             self.app.paused = True
             self.draw_level_popup(surface, camera_pos)
         surface.blit(self.hud_image, self.pos)
-        self.draw_cursor(surface)
+        # self.draw_cursor(surface)
 
     def update(self):
         for child in self.children:
