@@ -11,7 +11,7 @@ class EnemyManager(Entity):
         self.rounds = 0
         self.time = 0
         self.wave_cleared = False
-
+        self.attributes["visible"] = False 
         self.SPAWN_DIST = 900
 
     def spawn_wave(self):

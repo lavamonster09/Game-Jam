@@ -12,21 +12,18 @@ import random
 class ExampleScene(Scene):
     def __init__(self, app):
         super().__init__(app)
-        self.test = Entity(self.app)
-        self.test.pos = pygame.Vector2(0, 0)
         self.player = Player(self.app)
         self.enemy_manager = EnemyManager(self.app, self.player)
         self.target_camera_pos = self.player.pos
         self.camera_pos = self.player.pos
         self.hud = HUD(self.app, self.player)
         self.hud.z_index = 1000000
-        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1, 30, 1)
+        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10)
         self.player.add_child(weapon)
 
         #btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(self.enemy_manager)
         #self.add_entity(btn1)
-        self.add_entity(self.test,)
         self.add_entity(self.player)
         self.add_entity(self.hud)
 
@@ -38,8 +35,6 @@ class ExampleScene(Scene):
             if self.target_camera_pos != pygame.Vector2(0,0):
                 self.camera_pos = self.target_camera_pos.slerp(self.camera_pos, 0.65)
             
-            self.test.pos.x += 1  
-
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)
         rnd_dir = random.randrange(0, 360)
