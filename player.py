@@ -18,7 +18,7 @@ class Player(Entity):
         self.roll_cooldown = 80 
         self.roll_length = 20 
         self.roll_counter = self.roll_cooldown 
-        self.roll_strenth = 20 
+        self.roll_strength = 20 
 
         self.speed_modifier = 1.25 
         self.velocity = pygame.Vector2(0, 0)
@@ -64,10 +64,10 @@ class Player(Entity):
         if direction.length() != 0 and self.velocity.length() < self.MAX_VEL:
             self.velocity += direction.normalize() * self.speed_modifier
 
-        if key[self.keybinds.get_key_code("DODGE")] and self.roll_cooldown == self.roll_counter:
+        if key[self.keybinds.get_key_code("DODGE")] and self.roll_cooldown == self.roll_counter and direction.length != 0:
             self.state = "rolling"
             self.roll_counter = 0 
-            self.velocity = direction.normalize() * self.roll_strenth
+            self.velocity = direction.normalize() * self.roll_strength
             self.friction_coeff= self.ROLLNG_COEFF
         if self.roll_counter <= self.roll_length:
             self.state = "rolling"

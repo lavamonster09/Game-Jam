@@ -18,6 +18,7 @@ class App:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.asset_loader = asset_loader.AssetLoader(self.config["ASSET_DIR"])
         pygame.display.set_caption(self.name) 
+        self.timer = 0
         self.running = True
         self.paused = False
 
@@ -31,6 +32,8 @@ class App:
             self.check_events()
             self.update()            
             self.draw()
+            if not self.paused:
+                self.timer += 1
 
     def check_events(self):       
         for event in pygame.event.get():
@@ -38,7 +41,6 @@ class App:
                 sys.exit()
                 pygame.quit()
                 self.running = False
-
 
     def draw(self):
         self.screen.fill((0,0,0))

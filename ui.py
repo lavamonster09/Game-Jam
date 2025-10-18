@@ -27,6 +27,7 @@ class HUD(Entity):
         super().__init__(app, sprite="")
         self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
         self.numbers = self.app.asset_loader.get("sheet_10_numbers")
+        self.colon = self.app.asset_loader.get("colon")
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
@@ -42,15 +43,17 @@ class HUD(Entity):
 
         self.player = player
         self.previous_health = 0
-        self.previous_xp = -1
+        self.previous_xp = 1
         self.pos = self.player.pos
 
         self.clock = self.app.clock
 
-        self.HEALTH_TEXT_OFFSET = pygame.Vector2(65, 300)
+        self.HEALTH_TEXT_OFFSET = pygame.Vector2(65, 288)
+        self.MAX_HEALTH_TEXT_OFFSET = pygame.Vector2(65, 32)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
         self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 61)
+        self.TIMER_OFFSET = pygame.Vector2(1440, 135)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
         self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
         self.LEVEL_TEXT_OFFSET = pygame.Vector2(288, 160)
@@ -76,15 +79,17 @@ class HUD(Entity):
     def draw_health(self, surface: pygame.Surface):
         if self.previous_health != self.player.health:
             self.target_health_pos = self.get_missing_health()
+            self.current_health_text = self.make_text(str(self.player.health))
+            self.max_health_text = self.make_text(str(self.player.max_health))
         self.cutout_health()
-        if self.target_health_pos != pygame.Vector2(0,0):
-            self.health_pos = self.health_pos.slerp(self.target_health_pos, 0.05)
+        self.health_pos = self.health_pos.smoothstep(self.target_health_pos, 0.15)
 
-        self.health_text = self.make_text(str(round(self.player.health * 100 / self.player.max_health)))
-        self.health_rect = self.health_text.get_rect(midtop= (self.pos + self.HEALTH_TEXT_OFFSET))
+        self.current_health_rect = self.current_health_text.get_rect(midtop= (self.pos + self.HEALTH_TEXT_OFFSET))
+        self.max_health_rect = self.max_health_text.get_rect(midbottom= (self.pos + self.MAX_HEALTH_TEXT_OFFSET))
 
         surface.blit(self.new_health_image, self.pos + self.health_pos + self.HEALTH_BAR_OFFSET)
-        surface.blit(self.health_text, self.health_rect)
+        surface.blit(self.current_health_text, self.current_health_rect)
+        surface.blit(self.max_health_text, self.max_health_rect)
 
         self.previous_health = self.player.health
 
@@ -95,17 +100,28 @@ class HUD(Entity):
                 self.level_available = True
                 self.make_level_popup()
         self.cutout_xp()
-        if self.target_xp_pos == pygame.Vector2(0,0):
-            self.target_xp_pos = pygame.Vector2(0.001,0)
-        self.xp_pos = self.xp_pos.slerp(self.target_xp_pos, 0.05) 
+        self.xp_pos = self.xp_pos.smoothstep(self.target_xp_pos, 0.15) 
 
         surface.blit(self.new_xp_image, self.new_xp_image.get_rect(topleft = (self.pos + self.XP_OFFSET)))
 
         self.previous_xp = self.player.xp
 
     def draw_kill_count(self, surface: pygame.Surface):
-        self.kill_count = self.make_text(str(self.player.total_kills))
-        surface.blit(self.kill_count, self.kill_count.get_rect(midleft = (self.pos + self.KILL_COUNT_OFFSET)))
+        kill_count = self.make_text(str(self.player.total_kills))
+        surface.blit(kill_count, kill_count.get_rect(midleft = (self.pos + self.KILL_COUNT_OFFSET)))
+    
+    def draw_time_played(self, surface: pygame.Surface):
+        sec = self.app.timer // 60
+        time_sec = sec % 60
+        time_min = sec // 60
+        if time_sec < 10:
+            time_sec = f"0{time_sec}"
+        if time_min < 10:
+            time_min = f"0{time_min}"
+
+        time_played = self.make_text(f"{time_min}:{time_sec}")
+        
+        surface.blit(time_played, time_played.get_rect(midleft = (self.pos + self.TIMER_OFFSET)))
 
     def draw_cursor(self, surface: pygame.Surface):
         mouse_pos = pygame.mouse.get_pos()
@@ -157,7 +173,10 @@ class HUD(Entity):
         surf = pygame.Surface((32 * len(num), 32))
         surf.set_colorkey('#000000')
         for i in range(0, len(num)):
-            surf.blit(self.numbers[int(num[i])], (i * 32, 0))
+            if num[i] == ":":
+                surf.blit(self.colon, (i * 32, 0))
+            else:
+                surf.blit(self.numbers[int(num[i])], (i * 32, 0))
         return surf     
 
     def make_level_popup(self):
@@ -188,10 +207,11 @@ class HUD(Entity):
             self.remove_child(child)
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
-        self.pos = self.get_relative_pos(surface, camera_pos)
+        self.pos = -self.get_relative_pos(surface, camera_pos)
         self.draw_xp(surface)
         self.draw_health(surface)
         self.draw_kill_count(surface)
+        self.draw_time_played(surface)
         self.draw_fps(surface)
         if self.level_available == True:
             self.app.paused = True

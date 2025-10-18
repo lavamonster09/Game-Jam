@@ -11,6 +11,8 @@ class EnemyManager(Entity):
         self.rounds = 0
         self.time = 0
         self.wave_cleared = False
+        self.boss_round = False
+        self.boss_dead = False
         self.attributes["visible"] = False 
         self.SPAWN_DIST = 900
 
@@ -20,27 +22,51 @@ class EnemyManager(Entity):
             self.spawn_enemy()
             count += 1
 
+        if self.rounds % 3 == 0 and self.rounds > 0:
+            self.boss_round = True
+
     def spawn_enemy(self):
         enemy = Enemy(self.app, self.player)
         rnd_dir = random.randrange(0, 360)
-        enemy.pos = self.player.pos + pygame.Vector2(1,0).rotate(rnd_dir) * self.SPAWN_DIST
+        enemy.pos = self.player.pos + pygame.Vector2(1, 0).rotate(rnd_dir) * self.SPAWN_DIST
 
         self.add_child(enemy)
+
+    def spawn_boss(self):
+        boss = Enemy(self.app, self.player)
+        boss.boss = True
+        boss.health *= 3
+        boss.damage *= 2
+        boss.held_xp = 10
+        boss.pos = self.player.pos + pygame.Vector2(0, -1) * self.SPAWN_DIST
+
+        self.add_child(boss)
 
     def check_children(self):
         kill_list = []
         for child in self.children:
             if not child.alive:
+                if child.boss:
+                    self.boss_dead = True
+                    self.boss_round = False
                 kill_list.append(child)
 
-        for i in kill_list:
-            xp = Xp(self.app, self.player)
-            xp.pos = i.pos
-            self.app.get_current_scene().add_entity(xp)
+        for i in kill_list:            
+            self.spawn_xp(i.held_xp, i.pos)
             self.remove_child(i)
 
         if len(self.children) == 0:
-            self.wave_cleared = True
+            if self.boss_dead or not self.boss_round:
+                self.wave_cleared = True
+                self.boss_dead = False
+            else:
+                self.spawn_boss()
+
+    def spawn_xp(self, count: int, pos: pygame.Vector2):
+        for i in range(count):
+            xp = Xp(self.app, self.player)
+            xp.pos = pos + (random.randint(-16, 16), random.randint(-16, 16))
+            self.app.get_current_scene().add_entity(xp)
         
     def update(self):
         for child in self.children:
