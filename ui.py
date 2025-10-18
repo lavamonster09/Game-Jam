@@ -3,24 +3,33 @@ from enemy import Enemy
 import pygame
 
 class Button(Entity):
-    def __init__(self, app, on_click, sprite="none", on_click_args= []):
+    def __init__(self, app, on_click, sprite="none", on_click_args= [], toggleable = False):
         super().__init__(app, sprite)
         self.on_click = on_click
         self.on_click_args = on_click_args
         self.surf = self.app.asset_loader.get(sprite)
         self.current_surf = self.surf[0]
+        self.toggleable = toggleable
+        self.active = False
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
+        if self.active:
+            self.current_surf = self.surf[1]
+        else:
+            self.current_surf = self.surf[0]
         surface.blit(self.current_surf, self.current_surf.get_rect(topleft = self.pos))
         
     def update(self):
         super().update()
-        self.current_surf = self.surf[0]
+        if not self.toggleable:
+            self.active = False
         if self.current_surf.get_rect(topleft= self.pos).collidepoint(pygame.mouse.get_pos()):
             if pygame.mouse.get_just_released()[0]:
                 self.on_click(*self.on_click_args)
+                self.active = not self.active
             if pygame.mouse.get_pressed()[0]:
-                self.current_surf = self.surf[1]
+                if self.toggleable == False:
+                    self.active = True
 
 class HUD(Entity):
     def __init__(self, app, player):

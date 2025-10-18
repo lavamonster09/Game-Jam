@@ -27,7 +27,7 @@ class Enemy(Entity):
                 self.velocity -= 2 *(self.pos.move_towards(entity.pos, self.speed) - self.pos).normalize() 
         self.velocity = self.velocity.clamp_magnitude(self.MAX_VEL)
         self.pos += self.velocity
-        if self.pos.distance_to(self.player.pos) <= 64 and self.player.attributes.get("damageable", False):
+        if self.pos.distance_to(self.player.pos) <= 32 and self.player.attributes.get("damageable", False):
             self.player.damage(self.damage)
 
     def hurt(self, dmg:float, knockback: float):

@@ -19,8 +19,6 @@ class ExampleScene(Scene):
         self.hud = HUD(self.app, self.player)
         self.hud.z_index = 1000000
 
-        weapon = MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 3, 1)
-        self.player.add_child(weapon)
 
         #btn1 = Button(app, self.spawn_enemy, sprite="spawn_enemy_button") 
         self.add_entity(self.enemy_manager)
@@ -67,14 +65,79 @@ class WeaponSelectScene(Scene):
         self.weapons = {
             "Dex Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1.5, 20, 10, 1, 3),
             "Qua Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1.5, 2, 15, 15, 2, 2),
-            "Str Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 2, 2.5, 10, 20, 1, 3),
+            "Str Melee": MeleeWeapon(self.app,"sheet_10_heavy_slash", 2, 2.5, 45, 20, 3, 1),
             "Dex Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
             "Qua Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 2, 2),
             "Str Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
         }
+        self.selected_weapon = None
+
+        bg = Entity(self.app, "grass_background")
+        bg.z_index = -1
+        self.add_entity(bg)
+
+        menu = Entity(self.app, "weapon_select_menu")
+        self.add_entity(menu)
+
+        dex_melee_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Dex Melee"]], toggleable=True)
+        dex_melee_btn.pos = pygame.Vector2(11 * 16 * 2, 11 * 16 * 2)
+        dex_melee_btn.z_index = 1
+        self.add_entity(dex_melee_btn)
+        
+        qua_melee_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Qua Melee"]], toggleable=True)
+        qua_melee_btn.pos = pygame.Vector2(22 * 16 * 2, 11 * 16 * 2)
+        qua_melee_btn.z_index = 1
+        self.add_entity(qua_melee_btn)
+
+        str_melee_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Str Melee"]], toggleable=True)
+        str_melee_btn.pos = pygame.Vector2(33 * 16 * 2, 11 * 16 * 2)
+        str_melee_btn.z_index = 1 
+        self.add_entity(str_melee_btn)
+
+        dex_ranged_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Dex Ranged"]], toggleable=True)
+        dex_ranged_btn.pos = pygame.Vector2(11 * 16 * 2, 22 * 16 * 2)
+        dex_ranged_btn.z_index = 1
+        self.add_entity(dex_ranged_btn)
+
+        qua_ranged_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Qua Ranged"]], toggleable=True)
+        qua_ranged_btn.pos = pygame.Vector2(22 * 16 * 2, 22 * 16 * 2)
+        qua_ranged_btn.z_index = 1
+        self.add_entity(qua_ranged_btn)
+
+        str_ranged_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Str Ranged"]], toggleable=True)
+        str_ranged_btn.pos = pygame.Vector2(33 * 16 * 2, 22 * 16 * 2)
+        str_ranged_btn.z_index = 1
+        self.add_entity(str_ranged_btn)
+
+        start_run_btn = Button(self.app, self.start_run_on_click, "sheet_2_startt_button", [])
+        start_run_btn.pos = pygame.Vector2(22 * 16 * 2, 25 * 16 * 2)
+        start_run_btn.z_index = 1
+        self.add_entity(start_run_btn)
+
+        back_btn = Button(self.app, self.back_on_click, "sheet_2_back_button", [])
+        back_btn.pos = pygame.Vector2(16,16)
+        back_btn.z_index = 1 
+        self.add_entity(back_btn)
+
+        self.weapon_buttons = [qua_melee_btn, qua_ranged_btn, str_melee_btn, str_ranged_btn, dex_melee_btn, dex_ranged_btn]
 
     def update(self):
         super().update()
+
+    def back_on_click(self):
+        self.app.current_scene = "main_menu"
+
+    def weapon_on_click(self, weapon):
+        for button in self.weapon_buttons:
+            button.active = False
+        self.selected_weapon = weapon
+
+    def start_run_on_click(self):
+        if self.selected_weapon != None:
+            self.app.scenes["game"] = ExampleScene(self.app)
+            self.app.scenes["game"].player.add_child(self.selected_weapon)
+            self.app.current_scene = "game"
+
 
     def draw(self, screen):
         super().draw(screen)

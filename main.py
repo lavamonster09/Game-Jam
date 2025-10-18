@@ -18,7 +18,7 @@ def main():
     }
 
     game.scenes = scenes
-    game.current_scene = "test"
+    game.current_scene = "main_menu"
     game.run()
 
 if __name__ == "__main__":
