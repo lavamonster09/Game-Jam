@@ -64,7 +64,7 @@ class Player(Entity):
         if direction.length() != 0 and self.velocity.length() < self.MAX_VEL:
             self.velocity += direction.normalize() * self.speed_modifier
 
-        if key[self.keybinds.get_key_code("DODGE")] and self.roll_cooldown == self.roll_counter and direction.length != 0:
+        if key[self.keybinds.get_key_code("DODGE")] and self.roll_cooldown == self.roll_counter and direction.length() != 0:
             self.state = "rolling"
             self.roll_counter = 0 
             self.velocity = direction.normalize() * self.roll_strength

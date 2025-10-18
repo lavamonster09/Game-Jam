@@ -9,11 +9,12 @@ class EnemyManager(Entity):
         super().__init__(app)
         self.player = player
         self.rounds = 0
-        self.time = 0
+        self.time = 600
         self.wave_cleared = False
         self.boss_round = False
         self.boss_dead = False
 
+        self.ROUND_TIMER = 600
         self.SPAWN_DIST = 900
 
     def spawn_wave(self):
@@ -43,6 +44,7 @@ class EnemyManager(Entity):
         self.add_child(boss)
 
     def check_children(self):
+        self.time += 1
         kill_list = []
         for child in self.children:
             if not child.alive:
@@ -55,7 +57,8 @@ class EnemyManager(Entity):
             self.spawn_xp(i.held_xp, i.pos)
             self.remove_child(i)
 
-        if len(self.children) == 0:
+        if self.time >= self.ROUND_TIMER:
+            self.time = 0
             if self.boss_dead or not self.boss_round:
                 self.wave_cleared = True
                 self.boss_dead = False
