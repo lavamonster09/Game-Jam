@@ -88,11 +88,11 @@ class RangedWeapon(Entity):
         self.attack_angle = 0
         self.str_mul = 0
         self.dex_mul = 0
-        self.draw_timer = 0
+        self.draw_timer = 10
 
         self.DAMAGE_MUL = 0.5
         self.MAX_DRAW = 30
-        self.MAX_PROJ_SPEED = 3
+        self.MAX_PROJ_SPEED = 10
 
         self.scaling = {
             "Strength": str_scaling,
@@ -100,33 +100,23 @@ class RangedWeapon(Entity):
         }
 
     def update(self):        
-        super().update()
         kill_list = []
         if self.attack_time != self.attack_counter:
             self.attack_counter += 1
         else:
-            if pygame.mouse.get_pressed()[0]:
+            if pygame.mouse.get_pressed()[0] and self.draw_timer < self.MAX_DRAW:
                 self.draw_timer += 1
             if pygame.mouse.get_just_released()[0]:
                 self.attack_counter = 0
                 self.make_projectile()
         for child in self.children:
+            child.update()
             if not child.alive:
                 kill_list.append(child)
         for child in kill_list:
             self.children.remove(child)
 
     def draw(self, surface, camera_pos):
-        # if self.attack_counter < self.attack_time:
-        #     if self.attack_counter:
-        #         i = self.attack_counter // (self.attack_time // (len(self.app.asset_loader.get(self.sprite))) + 1 )
-        #         frame = self.app.asset_loader.get(self.sprite)[i]
-        #         frame = pygame.transform.rotate(frame, self.attack_angle)
-        #         frame = pygame.transform.flip(frame, False, True)
-        #         surface.blit(frame, self.rect.topleft)
-        #         self.damage_rect = frame.get_rect() 
-        #     if self.attack_counter == self.attack_time // 2:
-        #         pygame.draw.rect(surface, (255,255,255), self.rect, 1)
         super().draw(surface, camera_pos)
 
     def make_projectile(self):
@@ -138,38 +128,30 @@ class RangedWeapon(Entity):
         str_dmg = self.scaling["Strength"] * self.str_mul * self.DAMAGE_MUL
         dex_dmg = self.scaling["Dexterity"] * self.dex_mul * self.DAMAGE_MUL
         damage_scaled = round(self.damage + str_dmg + dex_dmg, 2)
-        target_pos = pygame.mouse.get_pos() - self.player.pos
+        target_pos = pygame.mouse.get_pos() - self.get_screen_pos()
         proj_speed = self.MAX_PROJ_SPEED * self.draw_timer / self.MAX_DRAW
-        print(proj_speed)
-        proj = Projectile(self.app, self.pos, target_pos, damage_scaled, proj_speed, True)
+        knockback = self.knockback * self.draw_timer / self.MAX_DRAW
+        proj = Projectile(self.app, self.player.pos, target_pos, knockback, damage_scaled, proj_speed, True)
         self.add_child(proj)
-
-    # def get_rect(self):
-    #     dir = pygame.mouse.get_pos() - self.get_screen_pos()
-    #     if dir.length() == 0:
-    #         dir = pygame.Vector2(0, 1)
-    #     dir = dir.normalize()
-    #     if self.damage_rect:
-    #         rect = self.damage_rect
-    #     else:
-    #         rect = pygame.Rect(0,0,0,0)
-    #     rect.center = self.pos + dir * 100
-    #     return rect
+        self.draw_timer = 10
     
 class Projectile(Entity):
-    def __init__(self, app, pos: pygame.Vector2, target_pos: pygame.Vector2, damage: float, speed: float, friendly: bool):
+    def __init__(self, app, pos: pygame.Vector2, target_pos: pygame.Vector2, knockback: float, damage: float, speed: float, friendly: bool):
         super().__init__(app, sprite= "")
         self.attributes["friendly"] = friendly
         self.target_pos = pygame.Vector2(target_pos)
-        self.original_pos = pygame.Vector2(pos)
+        self.pos = pygame.Vector2(pos)
         self.damage = damage
+        self.knockback = knockback
         self.player = self.app.get_current_scene().player
         self.speed = speed
-        self.rect = self.get_rect()
+        self.alive_timer = 0
         self.alive = True
 
+        self.DURATION = 600
+
     def get_dir(self) -> pygame.Vector2:
-        dir = self.target_pos - self.get_parent().get_screen_pos()
+        dir = self.target_pos
         if dir.length() == 0:
             dir = pygame.Vector2(0, 1)
         dir = dir.normalize()
@@ -178,21 +160,21 @@ class Projectile(Entity):
     def move_to_target(self):
         self.dir = self.get_dir()
         self.pos += self.dir * self.speed
-        print(self.pos)
 
     def check_collisions(self):
         if self.attributes["friendly"]:
             for entity in self.app.get_current_scene().enemy_manager.children:
-                if self.rect.colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
-                    entity.hurt(self.damage, self.get_parent().knockback)
+                if self.get_rect().colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
+                    entity.hurt(self.damage, self.knockback)
                     self.alive = False
         else:
-            if self.rect.colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", True): 
+            if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", True): 
                 self.player.damage(self.damage)
                 self.alive = False
             
     def update(self):
-        super().update()
+        self.alive_timer += 1
         self.check_collisions()
         self.move_to_target()
-
+        if self.alive_timer >= self.DURATION:
+            self.alive = False
