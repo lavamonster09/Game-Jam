@@ -77,13 +77,12 @@ class MeleeWeapon(Entity):
 
 class RangedWeapon(Entity):
     def __init__(self, app, sprite, range: float, damage: float, attack_time: float, knockback: float, str_scaling: float, dex_scaling: float):
-        super().__init__(app)
+        super().__init__(app, sprite)
         self.sprite = sprite
         self.range = range
         self.damage = damage
         self.attack_time = attack_time
         self.attack_counter = attack_time
-        self.damage_rect = app.asset_loader.get(self.sprite)[0].get_rect()
         self.knockback = knockback
         self.attributes["visible"] = False
         self.attributes["is_ranged"] = True
@@ -136,13 +135,13 @@ class RangedWeapon(Entity):
         target_pos = pygame.mouse.get_pos() - self.get_screen_pos()
         proj_speed = self.MAX_PROJ_SPEED * self.draw_timer / self.MAX_DRAW
         knockback = self.knockback * self.draw_timer / self.MAX_DRAW
-        proj = Projectile(self.app, self.player.pos, target_pos, knockback, damage_scaled, proj_speed, True)
+        proj = Projectile(self.app, self.sprite, self.player.pos, target_pos, knockback, damage_scaled, proj_speed, True)
         self.add_child(proj)
         self.draw_timer = 10
     
 class Projectile(Entity):
-    def __init__(self, app, pos: pygame.Vector2, target_pos: pygame.Vector2, knockback: float, damage: float, speed: float, friendly: bool):
-        super().__init__(app, sprite= "")
+    def __init__(self, app, sprite, pos: pygame.Vector2, target_pos: pygame.Vector2, knockback: float, damage: float, speed: float, friendly: bool):
+        super().__init__(app, sprite)
         self.attributes["friendly"] = friendly
         self.target_pos = pygame.Vector2(target_pos)
         self.pos = pygame.Vector2(pos)
@@ -163,9 +162,16 @@ class Projectile(Entity):
             dir = pygame.Vector2(0, 1)
         dir = dir.normalize()
         return dir
+    
+    def draw(self, surface, camera_pos):
+        angle = math.atan2(self.dir.y, self.dir.x)
+        new_sprite = self.app.asset_loader.get(self.sprite)
+        new_sprite = pygame.transform.rotate(new_sprite, angle)
+        surface.blit(new_sprite, new_sprite.get_rect(center= self.pos))
 
     def move_to_target(self):
         self.dir = self.get_dir()
+        #self.get_rotation()
         self.pos += self.dir * self.speed
 
     def check_collisions(self):
