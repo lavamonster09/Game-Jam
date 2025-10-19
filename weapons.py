@@ -164,10 +164,11 @@ class Projectile(Entity):
         return dir
     
     def draw(self, surface, camera_pos):
-        angle = math.atan2(self.dir.y, self.dir.x)
+        angle = math.atan2(-self.target_pos.x, -self.target_pos.y)
         new_sprite = self.app.asset_loader.get(self.sprite)
-        new_sprite = pygame.transform.rotate(new_sprite, angle)
-        surface.blit(new_sprite, new_sprite.get_rect(center= self.pos))
+        new_sprite = pygame.transform.rotate(new_sprite, math.degrees(angle))
+        self.offset = pygame.Vector2(surface.get_size())//2 - camera_pos
+        surface.blit(new_sprite,self.pos + self.offset) 
 
     def move_to_target(self):
         self.dir = self.get_dir()
