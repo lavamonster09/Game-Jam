@@ -45,7 +45,7 @@ class MeleeWeapon(Entity):
                         entity.hurt(damage_scaled, self.knockback)
 
         else:
-            if pygame.mouse.get_just_pressed()[0]:
+            if pygame.mouse.get_pressed()[0]:
                 self.app.play_sound(random.choice(["slash","slash(1)"]),0.1)
                 self.attack_counter = 0 
                 self.rect = self.get_rect()
