@@ -68,7 +68,7 @@ class EnemyManager(Entity):
                 self.boss_dead = False
             else:
                 self.spawn_boss()
-                self.health_mul += 2
+                self.health_mul += 0.5
 
     def spawn_xp(self, count: int, pos: pygame.Vector2):
         for i in range(count):

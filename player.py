@@ -39,7 +39,7 @@ class Player(Entity):
             "Vigor": 0,
             "Endurance": 0,
         }
-
+        
         self.attributes["collidable"] = True
         self.attributes["damageable"] = True
 

@@ -4,7 +4,7 @@ import pygame
 from player import Player
 from enemy import Enemy
 from enemy_manager import EnemyManager
-from weapons import MeleeWeapon
+from weapons import *
 from xp import Xp
 from ui import * 
 import random
@@ -66,9 +66,9 @@ class WeaponSelectScene(Scene):
             "Dex Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1.5, 20, 10, 1, 3),
             "Qua Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1.5, 2, 15, 15, 2, 2),
             "Str Melee": MeleeWeapon(self.app,"sheet_10_heavy_slash", 2, 2.5, 45, 20, 3, 1),
-            "Dex Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
-            "Qua Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 2, 2),
-            "Str Ranged": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
+            "Dex Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
+            "Qua Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 2, 2),
+            "Str Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
         }
         self.selected_weapon = None
 
