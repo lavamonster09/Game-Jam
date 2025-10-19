@@ -17,7 +17,8 @@ class EnemyManager(Entity):
         self.health_mul = 1
 
         self.ROUND_TIMER = 600
-        self.SPAWN_DIST = 1000
+        self.MIN_SPAWN_DIST = 1000
+        self.MAX_SPAWN_DIST = 2000
         self.BOSS_INTERVAL = 5
 
     def spawn_wave(self):
@@ -37,7 +38,8 @@ class EnemyManager(Entity):
         enemy = Enemy(self.app, self.player)
         enemy.health *= self.health_mul
         rnd_dir = random.randrange(0, 360)
-        enemy.pos = self.player.pos + pygame.Vector2(1, 0).rotate(rnd_dir) * self.SPAWN_DIST
+        rnd_dist = random.randrange(self.MIN_SPAWN_DIST, self.MAX_SPAWN_DIST)
+        enemy.pos = self.player.pos + pygame.Vector2(1, 0).rotate(rnd_dir) * rnd_dist
         if is_ranged:
             enemy.attributes["ranged"] = True
         self.add_child(enemy)
