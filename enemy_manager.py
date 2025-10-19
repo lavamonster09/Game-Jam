@@ -22,6 +22,9 @@ class EnemyManager(Entity):
 
     def spawn_wave(self):
         count = 0
+        if self.rounds > 5:
+            while count != self.rounds - 5:
+                count += 1                
         while count != self.rounds + 10:
             self.spawn_enemy()
             count += 1
