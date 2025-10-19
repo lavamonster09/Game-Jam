@@ -2,6 +2,7 @@ import pygame
 import sys
 import asset_loader
 from scene import Scene
+from scenes import *
 from entity import Entity
 
 class App:
@@ -57,3 +58,12 @@ class App:
     def play_sound(self, key, vol):
         self.asset_loader.sounds[key].set_volume(vol)
         self.asset_loader.sounds[key].play()
+
+    def reset(self):
+        weapon_select = WeaponSelectScene(self)
+        game = ExampleScene(self)
+        self.scenes["weapon_select"] = weapon_select
+        self.scenes["game"] = game
+        self.current_scene = "weapon_select"
+        self.timer = 0
+        self.paused = False

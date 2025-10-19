@@ -61,7 +61,7 @@ class ExampleScene(Scene):
         ]
         for offset in offsets:
             screen.blit(grass, ((offset[0] + self.player.pos.x // self.app.width) * self.app.width - self.camera_pos.x, (offset[1] + self.player.pos.y // self.app.height) * self.app.height - self.camera_pos.y))
-        return super().draw(screen)
+        super().draw(screen)
 
 class WeaponSelectScene(Scene):
     def __init__(self, app):

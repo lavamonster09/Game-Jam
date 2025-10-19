@@ -39,12 +39,12 @@ class HUD(Entity):
         self.font = self.app.asset_loader.fonts.get("JetBrainsMonoNL-Medium")
         self.numbers = self.app.asset_loader.get("sheet_10_numbers")
         self.colon = self.app.asset_loader.get("colon")
+        self.dash = self.app.asset_loader.get("char_dash")
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.pause_image = self.app.asset_loader.get("pause_menu")
         self.death_image = self.app.asset_loader.get("death_screen")
-
         self.level_menu = self.app.asset_loader.get("level_up_menu")
         
         pygame.mouse.set_visible(False)
@@ -74,7 +74,9 @@ class HUD(Entity):
         self.LEVEL_BUTTON_STEP = 64
         self.DEATH_SCENE_TIMER_OFFSET = pygame.Vector2(512, 366)
         self.DEATH_SCENE_KILLS_OFFSET = pygame.Vector2(160, 366)
-        self.DEATH_SCENE_ALIVE_OFFSET = pygame.Vector2(510, 222)
+        self.DEATH_SCENE_ALIVE_OFFSET = pygame.Vector2(416, 240)
+        self.PLAY_BUTTON_OFFSET = pygame.Vector2(512, 626)
+        self.EXIT_BUTTON_OFFSET = pygame.Vector2(864, 626)
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
         self.target_xp_pos = self.XP_OFFSET 
@@ -83,6 +85,8 @@ class HUD(Entity):
         self.xp_pos = pygame.Vector2(1, 0)
 
         self.level_available = False
+        self.death_scene_made = False
+        self.pause_scene_made = False
 
     def get_relative_pos(self, surface: pygame.Surface, camera_pos: pygame.Vector2) -> pygame.Vector2:
         relative_pos = self.player.pos - camera_pos
@@ -160,16 +164,35 @@ class HUD(Entity):
         pygame.draw.rect(surface, '#00C494', ((x_offset + self.pos.x, self.CHARGE_BAR_OFFSET.y + self.pos.y), (self.player.children[0].draw_timer * 10 - 100, 20)), border_radius= 5)
         pygame.draw.rect(surface, '#77888C', ((x_offset + self.pos.x, self.CHARGE_BAR_OFFSET.y + self.pos.y), (self.player.children[0].MAX_DRAW * 10 - 100, 20)), 5, 5)
 
-    def draw_death_scene(self, surface):
+    def draw_death_scene(self, surface, camera_pos):
+        surface.blit(self.new_death_img, self.new_death_img.get_rect(center= self.CENTER))
+
+        for child in self.children:
+            child.draw(surface, camera_pos)
+            child.update()
+
+    def make_death_scene(self, surface):
         current_enemies = len(self.app.get_current_scene().enemy_manager.children)
         timer_text = self.make_text(f"{self.time_min}:{self.time_sec}", 1.5)
         kills_text = self.make_text(str(self.player.total_kills), 1.5)
-        outnumbered_text = self.make_text(str(current_enemies), 4)
+        outnumbered_text = self.make_text(f"{current_enemies}-1", 4)
 
-        self.death_image.blit(timer_text, timer_text.get_rect(midleft= self.DEATH_SCENE_TIMER_OFFSET))
-        self.death_image.blit(kills_text, kills_text.get_rect(midleft= self.DEATH_SCENE_KILLS_OFFSET))
-        self.death_image.blit(outnumbered_text, outnumbered_text.get_rect(midright= self.DEATH_SCENE_ALIVE_OFFSET))
-        surface.blit(self.death_image, self.death_image.get_rect(center= self.CENTER))
+        self.new_death_img = self.death_image.copy()
+
+        new_run_button = Button(self.app, self.app.reset, "sheet_2_play_button")
+        new_run_button.pos = self.PLAY_BUTTON_OFFSET
+        new_run_button.z_index = 100000
+        exit_button = Button(self.app, self.quit_run, "sheet_2_exit_small_button")
+        exit_button.pos = self.EXIT_BUTTON_OFFSET
+        exit_button.z_index = 100000
+        self.add_child(exit_button)
+        self.add_child(new_run_button)
+
+        self.new_death_img.blit(timer_text, timer_text.get_rect(midleft= self.DEATH_SCENE_TIMER_OFFSET))
+        self.new_death_img.blit(kills_text, kills_text.get_rect(midleft= self.DEATH_SCENE_KILLS_OFFSET))
+        self.new_death_img.blit(outnumbered_text, outnumbered_text.get_rect(center= self.DEATH_SCENE_ALIVE_OFFSET))
+
+        self.death_scene_made = True
 
     def cutout_health(self):
         size = self.health_image.size
@@ -207,7 +230,10 @@ class HUD(Entity):
         surf = pygame.Surface((step * len(num), step))
         surf.set_colorkey('#000000')
         for i in range(0, len(num)):
-            if num[i] == ":":
+            if num[i] == "-":
+                image = pygame.transform.scale(self.dash, (image.width * scale, image.height * scale)).convert_alpha()
+                surf.blit(image, (i * step, 0))
+            elif num[i] == ":":
                 image = pygame.transform.scale(self.colon, (image.width * scale, image.height * scale)).convert_alpha()
                 surf.blit(image, (i * step, 0))
             else:
@@ -226,7 +252,6 @@ class HUD(Entity):
             Button(self.app, self.level_up,  "sheet_2_level_up_button", ["Endurance"])
         ]
 
-    
         levels = list(self.player.levels.values())
         for i in range(len(levels)):
             surf = self.make_text(str(levels[i]))
@@ -234,37 +259,45 @@ class HUD(Entity):
 
         for i in range(0, 4):
             buttons[i].pos = self.LEVEL_MENU_OFFSET + (self.LEVEL_BUTTON_OFFSET.x, self.LEVEL_BUTTON_OFFSET.y + i * self.LEVEL_BUTTON_STEP)
-            print(buttons[i].pos)
             self.add_child(buttons[i])
 
     def level_up(self, stat: str):
         self.player.level_up(stat)
+        self.children = []
         self.level_available = False
         self.app.paused = False
-        for child in self.children:
-            self.remove_child(child)
     
-    def draw_pause_popup(self, surface):
+    def draw_pause_popup(self, surface, camera_pos):
         rect = self.pause_image.get_rect()
         rect.center = (surface.width / 2, surface.height / 2)
+        surface.blit(self.pause_image, rect.topleft)
+
+        for child in self.children:
+            child.draw(surface, camera_pos)
+            child.update()
+
+    def make_pause_popup(self, surface):
         play = Button(self.app, self.resume, "sheet_2_play_button")
         play.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 - 32)
         exit = Button(self.app, self.quit_run, "sheet_2_exit_small_button")
         exit.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 + 64)
         self.add_child(exit)
         self.add_child(play)
-        surface.blit(self.pause_image, rect.topleft) 
+        self.pause_scene_made = True
     
     def resume(self):
         self.app.paused = False
         self.children = []
+        self.pause_scene_made = False
     
     def quit_run(self):
         self.app.current_scene = "main_menu"
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         if self.player.dead:
-            self.draw_death_scene(surface)
+            if not self.death_scene_made:
+                self.make_death_scene(surface)
+            self.draw_death_scene(surface, camera_pos)
         else:
             self.pos = -self.get_relative_pos(surface, camera_pos)
             self.draw_xp(surface)
@@ -278,7 +311,9 @@ class HUD(Entity):
                 self.app.paused = True
                 self.draw_level_popup(surface, camera_pos)
             elif self.app.paused == True:
-                self.draw_pause_popup(surface)
+                if not self.pause_scene_made:
+                    self.make_pause_popup(surface)
+                self.draw_pause_popup(surface, camera_pos)
             surface.blit(self.hud_image, self.pos)
 
     def update(self):

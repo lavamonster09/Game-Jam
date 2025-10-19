@@ -108,7 +108,6 @@ class RangedWeapon(Entity):
         if self.attack_time != self.attack_counter:
             self.attack_counter += 1
         else:
-            print(self.draw_timer)
             if pygame.mouse.get_pressed()[0] and self.draw_timer < self.MAX_DRAW:
                 self.draw_timer += self.draw_speed
                 if self.draw_timer > self.MAX_DRAW:
@@ -140,7 +139,6 @@ class RangedWeapon(Entity):
         target_pos = pygame.mouse.get_pos() - self.get_screen_pos()
         proj_speed = self.MAX_PROJ_SPEED * self.draw_timer / self.MAX_DRAW
         knockback = self.knockback * self.draw_timer / self.MAX_DRAW
-        print(self.player.pos)
         proj = Projectile(self.app, self.sprite, self.player.pos.copy(), target_pos, knockback, damage_scaled, proj_speed, True)
         self.add_child(proj)
         self.draw_timer = 10

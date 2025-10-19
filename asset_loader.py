@@ -34,7 +34,6 @@ class AssetLoader:
                 elif file.split(".")[-1] == "ttf":
                     self.fonts[file.split(".")[0]] = pygame.font.Font(dir[0] + "/" + file)
                 elif file.split(".")[-1] in ["mp3","wav"]:
-                    print(file)
                     self.sounds[file.split(".")[0]] = pygame.mixer.Sound(dir[0] + "/" + file)
                     self.sounds[file.split(".")[0]].set_volume(0.1)
                   
