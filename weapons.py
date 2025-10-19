@@ -90,6 +90,7 @@ class RangedWeapon(Entity):
         self.attack_angle = 0
         self.str_mul = 0
         self.dex_mul = 0
+        self.draw_speed = 20 / attack_time
         self.draw_timer = 10
 
         self.DAMAGE_MUL = 0.5
@@ -107,7 +108,9 @@ class RangedWeapon(Entity):
             self.attack_counter += 1
         else:
             if pygame.mouse.get_pressed()[0] and self.draw_timer < self.MAX_DRAW:
-                self.draw_timer += 1
+                self.draw_timer += self.draw_speed
+                if self.draw_timer > self.MAX_DRAW:
+                    self.draw_timer = self.MAX_DRAW
             if pygame.mouse.get_just_released()[0]:
                 self.attack_counter = 0
                 self.make_projectile()
@@ -149,8 +152,10 @@ class Projectile(Entity):
         self.speed = speed
         self.alive = True
         self.alive_timer = 0
+        self.targets_pierced = []
 
-        self.slow_down_point = speed * 12
+        self.MAX_PIERCE = 5
+        self.SLOW_DOWN_POINT = speed * 12
 
     def get_dir(self) -> pygame.Vector2:
         dir = self.target_pos
@@ -166,9 +171,11 @@ class Projectile(Entity):
     def check_collisions(self):
         if self.attributes["friendly"]:
             for entity in self.app.get_current_scene().enemy_manager.children:
-                if self.get_rect().colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False): 
+                if self.get_rect().colliderect(entity.get_rect()) and entity.attributes.get("player_damageable", False) and not entity in self.targets_pierced: 
                     entity.hurt(self.damage, self.knockback)
-                    self.alive = False
+                    self.targets_pierced.append(entity)
+                    if len(self.targets_pierced) >= self.MAX_PIERCE:
+                        self.alive = False
         else:
             if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", True): 
                 self.player.damage(self.damage)
@@ -176,11 +183,10 @@ class Projectile(Entity):
             
     def update_speed(self):
         self.alive_timer += 1
-        if self.alive_timer >= self.slow_down_point:
+        if self.alive_timer >= self.SLOW_DOWN_POINT:
             self.speed *= 0.95
         if self.speed <= 1:
             self.alive = False
-        print(self.speed, self.slow_down_point)
 
     def update(self):
         self.update_speed()
