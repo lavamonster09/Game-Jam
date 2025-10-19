@@ -5,7 +5,7 @@
         "MOVE_LEFT": "a",
         "MOVE_RIGHT": "d",
         "DODGE": "space",
-        "QUIT": "escape"
+        "PAUSE": "escape"
     },
     "settings": {
         "NAME": "Black Souls III",

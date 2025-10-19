@@ -32,6 +32,8 @@ class ExampleScene(Scene):
         if self.app.paused:
             self.hud.update()
         else:
+            if pygame.key.get_just_pressed()[self.app.cfg.get_key_code("PAUSE")]:
+                self.app.paused = True
             super().update()
             self.camera_pos = self.target_camera_pos.smoothstep(self.camera_pos, 0.65)
             
