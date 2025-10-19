@@ -2,6 +2,7 @@ from entity import Entity
 from player import Player
 from weapons import Projectile
 import pygame
+import random
 
 class Enemy(Entity):
     def __init__(self, app, player):
@@ -63,6 +64,9 @@ class Enemy(Entity):
                 self.player.damage(self.damage)
 
     def hurt(self, dmg:float, knockback: float):
+        sound = random.choice(["hitHurt","hitHurt(1)","hitHurt(2)"])
+        self.app.play_sound(sound,0.015)
+
         self.health -= dmg
         if self.health <= 0:
             self.alive = False

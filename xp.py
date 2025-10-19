@@ -1,7 +1,7 @@
 import pygame 
 from entity import Entity
 import math
-
+import random
 class Xp(Entity):
     def __init__(self, app, player):
         super().__init__(app, "xp")
@@ -14,6 +14,8 @@ class Xp(Entity):
         if self.pos.distance_to(self.player.pos) <= 32:
             self.attributes["visible"] = False
             self.player.xp += 10
+            sound = random.choice(["pickupCoin","pickupCoin(1)","pickupCoin(2)"])
+            self.app.play_sound(sound, 0.03)
             if self.player.xp > self.player.max_xp:
                 self.player.xp = self.player.max_xp
             self.app.get_current_scene().entities.remove(self)

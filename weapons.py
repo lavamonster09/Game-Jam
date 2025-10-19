@@ -1,6 +1,7 @@
 import pygame
 import math
 from entity import Entity
+import random
 
 class MeleeWeapon(Entity):
     def __init__(self, app, sprite, range: float, damage: float, attack_time: float, knockback: float, str_scaling: float, dex_scaling: float):
@@ -45,6 +46,7 @@ class MeleeWeapon(Entity):
 
         else:
             if pygame.mouse.get_just_pressed()[0]:
+                self.app.play_sound(random.choice(["slash","slash(1)"]),0.1)
                 self.attack_counter = 0 
                 self.rect = self.get_rect()
                 self.attack_angle = pygame.Vector2(0,1).angle_to(pygame.mouse.get_pos() - self.get_screen_pos())
@@ -106,11 +108,14 @@ class RangedWeapon(Entity):
         if self.attack_time != self.attack_counter:
             self.attack_counter += 1
         else:
+            print(self.draw_timer)
             if pygame.mouse.get_pressed()[0] and self.draw_timer < self.MAX_DRAW:
                 self.draw_timer += self.draw_speed
                 if self.draw_timer > self.MAX_DRAW:
                     self.draw_timer = self.MAX_DRAW
             if pygame.mouse.get_just_released()[0]:
+                sound = random.choice(["laserShoot","laserShoot(1)","laserShoot(2)"])
+                self.app.play_sound(sound,0.03)
                 self.attack_counter = 0
                 self.make_projectile()
         for child in self.children:
@@ -135,7 +140,8 @@ class RangedWeapon(Entity):
         target_pos = pygame.mouse.get_pos() - self.get_screen_pos()
         proj_speed = self.MAX_PROJ_SPEED * self.draw_timer / self.MAX_DRAW
         knockback = self.knockback * self.draw_timer / self.MAX_DRAW
-        proj = Projectile(self.app, self.sprite, self.player.pos, target_pos, knockback, damage_scaled, proj_speed, True)
+        print(self.player.pos)
+        proj = Projectile(self.app, self.sprite, self.player.pos.copy(), target_pos, knockback, damage_scaled, proj_speed, True)
         self.add_child(proj)
         self.draw_timer = 10
     
@@ -152,6 +158,7 @@ class Projectile(Entity):
         self.alive = True
         self.alive_timer = 0
         self.targets_pierced = []
+        self.past_positions = []
 
         self.MAX_PIERCE = 5
         self.SLOW_DOWN_POINT = speed * 12
@@ -184,7 +191,7 @@ class Projectile(Entity):
                     if len(self.targets_pierced) >= self.MAX_PIERCE:
                         self.alive = False
         else:
-            if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", False): 
+            if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", True): 
                 self.player.damage(self.damage)
                 self.alive = False
             

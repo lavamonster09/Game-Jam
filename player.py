@@ -1,6 +1,6 @@
 import pygame
 from entity import *
-
+import random
 class Player(Entity):
     def __init__(self, app):
         super().__init__(app, "sheet_2_knight_placeholder") 
@@ -110,6 +110,7 @@ class Player(Entity):
         if self.damage_counter == self.damage_cooldown:
             self.damage_counter = 0 
             self.health -= damage
+            self.app.play_sound(random.choice(["Hurt (1)","Hurt (2)","Hurt (3)"]), 0.03)
             if self.health <= 0:
                 self.app.paused = True
                 self.dead = True
