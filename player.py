@@ -11,6 +11,7 @@ class Player(Entity):
         self.max_xp = 100
         self.max_health = 100
         self.total_kills = 0
+        self.dead = False
 
         self.damage_cooldown = 30
         self.damage_counter = 0
@@ -110,18 +111,19 @@ class Player(Entity):
             self.damage_counter = 0 
             self.health -= damage
             if self.health <= 0:
-                self.app.current_scene = "death"
+                self.app.paused = True
+                self.dead = True
 
     def draw(self, surface, camera_pos):
-        sprite = self.app.asset_loader.get(self.sprite)
-        if type(sprite) == list:
-            if self.state == "rolling":
-                sprite = sprite[1]
-            else:
-                sprite = sprite[0]
-        screen_size = surface.get_size()
-        self.offset = pygame.Vector2(screen_size)//2 - camera_pos
-        if self.attributes.get("visible", False):
-            surface.blit(sprite, self.pos.xy + self.offset)
-            for child in self.children:
-                child.draw(surface, camera_pos)
+        if self.state == "rolling":
+            sheet_index = 1
+        else:
+            sheet_index = 0
+        super().draw(surface, camera_pos, sheet_index)
+        # sprite = self.app.asset_loader.get(self.sprite)
+        # screen_size = surface.get_size()
+        #self.offset = pygame.Vector2(screen_size)//2 - camera_pos
+        # if self.attributes.get("visible", False):
+        #     surface.blit(self.sprite, self.pos.xy + self.offset)
+        #     for child in self.children:
+        #         child.draw(surface, camera_pos)

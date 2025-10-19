@@ -29,10 +29,10 @@ class Entity:
     def get_screen_pos(self) -> pygame.Vector2:
         return self.pos 
 
-    def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
+    def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2, sheet_index: int= 0):
         sprite = self.app.asset_loader.get(self.sprite)
         if type(sprite) == list:
-            sprite = sprite[0]
+            sprite = sprite[sheet_index]
         screen_size = surface.get_size()
         self.offset = pygame.Vector2(screen_size)//2 - camera_pos
         self.sprite_offset = pygame.Vector2(sprite.get_size()) // 2

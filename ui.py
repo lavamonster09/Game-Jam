@@ -41,6 +41,7 @@ class HUD(Entity):
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
         self.pause_image = self.app.asset_loader.get("pause_menu")
+        self.death_image = self.app.asset_loader.get("death_screen")
 
         self.level_menu = self.app.asset_loader.get("level_up_menu")
         
@@ -57,17 +58,21 @@ class HUD(Entity):
 
         self.clock = self.app.clock
 
+        self.CENTER = pygame.Vector2(800, 450)
         self.HEALTH_TEXT_OFFSET = pygame.Vector2(65, 288)
         self.MAX_HEALTH_TEXT_OFFSET = pygame.Vector2(65, 32)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
-        self.CHARGE_BAR_OFFSET = pygame.Vector2(20, 870)
+        self.CHARGE_BAR_OFFSET = pygame.Vector2(800, 800)
         self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 61)
         self.TIMER_OFFSET = pygame.Vector2(1440, 135)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
         self.LEVEL_BUTTON_OFFSET = pygame.Vector2(320, 160)
         self.LEVEL_TEXT_OFFSET = pygame.Vector2(288, 160)
         self.LEVEL_BUTTON_STEP = 64
+        self.DEATH_SCENE_TIMER_OFFSET = pygame.Vector2(512, 366)
+        self.DEATH_SCENE_KILLS_OFFSET = pygame.Vector2(160, 366)
+        self.DEATH_SCENE_ALIVE_OFFSET = pygame.Vector2(510, 222)
 
         self.target_health_pos = self.HEALTH_BAR_OFFSET
         self.target_xp_pos = self.XP_OFFSET 
@@ -125,11 +130,11 @@ class HUD(Entity):
         time_sec = sec % 60
         time_min = sec // 60
         if time_sec < 10:
-            time_sec = f"0{time_sec}"
+            self.time_sec = f"0{time_sec}"
         if time_min < 10:
-            time_min = f"0{time_min}"
+            self.time_min = f"0{time_min}"
 
-        time_played = self.make_text(f"{time_min}:{time_sec}")
+        time_played = self.make_text(f"{self.time_min}:{self.time_sec}")
         
         surface.blit(time_played, time_played.get_rect(midleft = (self.pos + self.TIMER_OFFSET)))
 
@@ -149,8 +154,20 @@ class HUD(Entity):
             child.update()
 
     def draw_charge_bar(self, surface):
-        pygame.draw.rect(surface, '#00C494', (self.CHARGE_BAR_OFFSET + self.pos, (self.player.children[0].draw_timer * 10 - 100, 20)), border_radius= 5)
-        pygame.draw.rect(surface, '#77888C', (self.CHARGE_BAR_OFFSET + self.pos, (self.player.children[0].MAX_DRAW * 10 - 100, 20)), 5, 5)
+        x_offset = self.CHARGE_BAR_OFFSET.x - (self.player.children[0].MAX_DRAW * 10 - 100) / 2
+        pygame.draw.rect(surface, '#00C494', ((x_offset + self.pos.x, self.CHARGE_BAR_OFFSET.y + self.pos.y), (self.player.children[0].draw_timer * 10 - 100, 20)), border_radius= 5)
+        pygame.draw.rect(surface, '#77888C', ((x_offset + self.pos.x, self.CHARGE_BAR_OFFSET.y + self.pos.y), (self.player.children[0].MAX_DRAW * 10 - 100, 20)), 5, 5)
+
+    def draw_death_scene(self, surface):
+        current_enemies = len(self.app.get_current_scene().enemy_manager.children)
+        timer_text = self.make_text(f"{self.time_min}:{self.time_sec}", 1.5)
+        kills_text = self.make_text(str(self.player.total_kills), 1.5)
+        outnumbered_text = self.make_text(str(current_enemies), 4)
+
+        self.death_image.blit(timer_text, timer_text.get_rect(midleft= self.DEATH_SCENE_TIMER_OFFSET))
+        self.death_image.blit(kills_text, kills_text.get_rect(midleft= self.DEATH_SCENE_KILLS_OFFSET))
+        self.death_image.blit(outnumbered_text, outnumbered_text.get_rect(midright= self.DEATH_SCENE_ALIVE_OFFSET))
+        surface.blit(self.death_image, self.death_image.get_rect(center= self.CENTER))
 
     def cutout_health(self):
         size = self.health_image.size
@@ -183,14 +200,18 @@ class HUD(Entity):
         xp_pos = pygame.Vector2(bar_size * percent_missing_xp, 0)
         return xp_pos
     
-    def make_text(self, num: str) -> pygame.Surface:
-        surf = pygame.Surface((32 * len(num), 32))
+    def make_text(self, num: str, scale: int= 1) -> pygame.Surface:
+        step = scale * 32
+        surf = pygame.Surface((step * len(num), step))
         surf.set_colorkey('#000000')
         for i in range(0, len(num)):
             if num[i] == ":":
-                surf.blit(self.colon, (i * 32, 0))
+                image = pygame.transform.scale(self.colon, (image.width * scale, image.height * scale)).convert_alpha()
+                surf.blit(image, (i * step, 0))
             else:
-                surf.blit(self.numbers[int(num[i])], (i * 32, 0))
+                image = self.numbers[int(num[i])]
+                scaled_image = pygame.transform.scale(image, (image.width * scale, image.height * scale)).convert_alpha()
+                surf.blit(scaled_image, (i * step, 0))
         return surf     
 
     def make_level_popup(self):
@@ -239,21 +260,23 @@ class HUD(Entity):
         self.app.current_scene = "main_menu"
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
-        self.pos = -self.get_relative_pos(surface, camera_pos)
-        self.draw_xp(surface)
-        self.draw_health(surface)
-        if self.player.children[0].attributes["is_ranged"]:
-            self.draw_charge_bar(surface)
-        self.draw_kill_count(surface)
-        self.draw_time_played(surface)
-        self.draw_fps(surface)
-        if self.level_available == True:
-            self.app.paused = True
-            self.draw_level_popup(surface, camera_pos)
-        elif self.app.paused == True:
-            self.draw_pause_popup(surface)
-        surface.blit(self.hud_image, self.pos)
-        # self.draw_cursor(surface)
+        if self.player.dead:
+            self.draw_death_scene(surface)
+        else:
+            self.pos = -self.get_relative_pos(surface, camera_pos)
+            self.draw_xp(surface)
+            self.draw_health(surface)
+            if self.player.children[0].attributes["is_ranged"]:
+                self.draw_charge_bar(surface)
+            self.draw_kill_count(surface)
+            self.draw_time_played(surface)
+            self.draw_fps(surface)
+            if self.level_available == True:
+                self.app.paused = True
+                self.draw_level_popup(surface, camera_pos)
+            elif self.app.paused == True:
+                self.draw_pause_popup(surface)
+            surface.blit(self.hud_image, self.pos)
 
     def update(self):
         for child in self.children:
