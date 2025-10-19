@@ -20,7 +20,7 @@ class App:
         pygame.display.set_caption(self.name) 
         self.timer = 0
         self.running = True
-        self.paused = False
+        self.paused = False 
 
         self.scenes = {}
         self.current_scene = ""

@@ -25,6 +25,8 @@ class ExampleScene(Scene):
         #self.add_entity(btn1)
         self.add_entity(self.player)
         self.add_entity(self.hud)
+        self.app.paused = False
+        self.app.timer = 0
 
     def update(self):
         if self.app.paused:
@@ -115,13 +117,14 @@ class WeaponSelectScene(Scene):
         self.add_entity(start_run_btn)
 
         back_btn = Button(self.app, self.back_on_click, "sheet_2_back_button", [])
-        back_btn.pos = pygame.Vector2(16,16)
+        back_btn.pos = pygame.Vector2(32,32)
         back_btn.z_index = 1 
         self.add_entity(back_btn)
 
         self.weapon_buttons = [qua_melee_btn, qua_ranged_btn, str_melee_btn, str_ranged_btn, dex_melee_btn, dex_ranged_btn]
 
     def update(self):
+        self.app.paused = True
         super().update()
 
     def back_on_click(self):
@@ -160,6 +163,7 @@ class MainMenu(Scene):
         self.add_entity(menu)
 
     def update(self):
+        self.app.paused = True
         super().update()
     
     def draw(self, screen):
