@@ -1,6 +1,7 @@
 from entity import Entity
 from enemy import Enemy
 import pygame
+import random
 
 class Button(Entity):
     def __init__(self, app, on_click, sprite="none", on_click_args= [], toggleable = False):
@@ -27,6 +28,7 @@ class Button(Entity):
             if pygame.mouse.get_just_released()[0]:
                 self.on_click(*self.on_click_args)
                 self.active = not self.active
+                self.app.play_sound(random.choice(["click","click(1)","click(2)"]),0.1)
             if pygame.mouse.get_pressed()[0]:
                 if self.toggleable == False:
                     self.active = True
@@ -194,6 +196,7 @@ class HUD(Entity):
         return surf     
 
     def make_level_popup(self):
+        self.app.play_sound("level_up", 0.03)
         self.new_level_menu = self.level_menu.copy()
         buttons = [
             Button(self.app, self.level_up, "sheet_2_level_up_button", ["Strength"]),

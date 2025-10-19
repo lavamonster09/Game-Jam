@@ -53,3 +53,7 @@ class App:
 
     def get_current_scene(self):
         return self.scenes[self.current_scene]
+
+    def play_sound(self, key, vol):
+        self.asset_loader.sounds[key].set_volume(vol)
+        self.asset_loader.sounds[key].play()

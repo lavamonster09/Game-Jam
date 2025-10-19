@@ -5,6 +5,7 @@ from config import *
 
 game = App()
 cfg = Config()
+pygame.init()
 
 def main():
     cfg.init()

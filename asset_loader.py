@@ -7,6 +7,7 @@ class AssetLoader:
         self.asset_dir = os.walk(asset_dir)
         self.assets = {}
         self.fonts = {}
+        self.sounds = {}
         self.load()
         self.null = pygame.Surface((2,2))
         pygame.draw.rect(self.null,(255, 0, 255),(0,0,1,1))
@@ -32,6 +33,10 @@ class AssetLoader:
                         self.assets[file.split(".")[0]] = pygame.transform.scale(image, (image.width * 2, image.height * 2)).convert_alpha()
                 elif file.split(".")[-1] == "ttf":
                     self.fonts[file.split(".")[0]] = pygame.font.Font(dir[0] + "/" + file)
+                elif file.split(".")[-1] in ["mp3","wav"]:
+                    print(file)
+                    self.sounds[file.split(".")[0]] = pygame.mixer.Sound(dir[0] + "/" + file)
+                    self.sounds[file.split(".")[0]].set_volume(0.1)
                   
     def get(self, key):
         return self.assets.get(key, self.null)
