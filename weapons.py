@@ -184,7 +184,7 @@ class Projectile(Entity):
                     if len(self.targets_pierced) >= self.MAX_PIERCE:
                         self.alive = False
         else:
-            if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", True): 
+            if self.get_rect().colliderect(self.player.get_rect()) and self.player.attributes.get("damageable", False): 
                 self.player.damage(self.damage)
                 self.alive = False
             

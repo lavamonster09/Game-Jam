@@ -19,25 +19,43 @@ class Enemy(Entity):
         self.alive = True
         self.boss = False
         self.held_xp = 1
+        self.ranged_timer = 0
+        self.RANGED_TIMER_LIMIT = 60
 
-    def update(self):
+    def check_children(self):
+        kill_list = []
         for child in self.children:
             child.update()
+            if not child.alive:
+                kill_list.append(child)
+
+        for child in kill_list:
+            self.children.remove(child)
+
+    def update(self):
+        self.check_children()
         if self.attributes["ranged"]:
             if self.pos.distance_to(self.player.pos) > 400:
                 self.velocity *= 0.65
-                self.velocity = self.velocity.clamp_magnitude(self.MAX_VEL)
                 self.velocity += (self.pos.move_towards(self.player.pos, self.speed) - self.pos).normalize()
+                for entity in self.app.get_current_scene().enemy_manager.children:
+                    if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable", False) and entity != self and(self.pos.move_towards(entity.pos, self.speed) - self.pos).magnitude() != 0:
+                        self.velocity -= 2 *(self.pos.move_towards(entity.pos, self.speed) - self.pos).normalize() 
+                self.velocity = self.velocity.clamp_magnitude(self.MAX_VEL)
                 self.pos += self.velocity
             else:
-                target_pos = self.player.pos - self.pos
-                new_proj = Projectile(self.app, "arrow_dex", self.pos, target_pos, 10, 5, 10, False)
-                self.add_child(new_proj)
+                if self.ranged_timer >= self.RANGED_TIMER_LIMIT:
+                    target_pos = self.player.pos - self.pos
+                    new_proj = Projectile(self.app, "arrow_dex", self.pos, target_pos, 10, 5, 10, False)
+                    self.add_child(new_proj)
+                    self.ranged_timer = 0
+                else:
+                    self.ranged_timer += 1
         else:
             self.velocity *= 0.65
             self.velocity += (self.pos.move_towards(self.player.pos, self.speed) - self.pos).normalize()
             for entity in self.app.get_current_scene().enemy_manager.children:
-                if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable",False) and entity != self and(self.pos.move_towards(entity.pos, self.speed) - self.pos).magnitude() != 0:
+                if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable", False) and entity != self and(self.pos.move_towards(entity.pos, self.speed) - self.pos).magnitude() != 0:
                     self.velocity -= 2 *(self.pos.move_towards(entity.pos, self.speed) - self.pos).normalize() 
             self.velocity = self.velocity.clamp_magnitude(self.MAX_VEL)
             self.pos += self.velocity
