@@ -13,6 +13,7 @@ class MeleeWeapon(Entity):
         self.damage_rect = app.asset_loader.get(self.sprite)[0].get_rect()
         self.knockback = knockback
         self.attributes["visible"] = False
+        self.attributes["is_ranged"] = False
         self.attack_angle = 0
         self.rect = pygame.Rect()
         self.str_mul = 0
@@ -85,6 +86,7 @@ class RangedWeapon(Entity):
         self.damage_rect = app.asset_loader.get(self.sprite)[0].get_rect()
         self.knockback = knockback
         self.attributes["visible"] = False
+        self.attributes["is_ranged"] = True
         self.attack_angle = 0
         self.str_mul = 0
         self.dex_mul = 0
@@ -127,7 +129,7 @@ class RangedWeapon(Entity):
             self.dex_mul = math.log(self.player.levels["Dexterity"], 4) + 1
         str_dmg = self.scaling["Strength"] * self.str_mul * self.DAMAGE_MUL
         dex_dmg = self.scaling["Dexterity"] * self.dex_mul * self.DAMAGE_MUL
-        damage_scaled = round(self.damage + str_dmg + dex_dmg, 2)
+        damage_scaled = round(self.damage + str_dmg + dex_dmg, 2) * self.draw_timer / self.MAX_DRAW
         target_pos = pygame.mouse.get_pos() - self.get_screen_pos()
         proj_speed = self.MAX_PROJ_SPEED * self.draw_timer / self.MAX_DRAW
         knockback = self.knockback * self.draw_timer / self.MAX_DRAW
@@ -145,10 +147,10 @@ class Projectile(Entity):
         self.knockback = knockback
         self.player = self.app.get_current_scene().player
         self.speed = speed
-        self.alive_timer = 0
         self.alive = True
+        self.alive_timer = 0
 
-        self.DURATION = 600
+        self.slow_down_point = speed * 12
 
     def get_dir(self) -> pygame.Vector2:
         dir = self.target_pos
@@ -172,9 +174,15 @@ class Projectile(Entity):
                 self.player.damage(self.damage)
                 self.alive = False
             
-    def update(self):
+    def update_speed(self):
         self.alive_timer += 1
+        if self.alive_timer >= self.slow_down_point:
+            self.speed *= 0.95
+        if self.speed <= 1:
+            self.alive = False
+        print(self.speed, self.slow_down_point)
+
+    def update(self):
+        self.update_speed()
         self.check_collisions()
         self.move_to_target()
-        if self.alive_timer >= self.DURATION:
-            self.alive = False
