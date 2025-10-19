@@ -40,6 +40,7 @@ class HUD(Entity):
         self.hud_image = self.app.asset_loader.get("assets_hud")
         self.health_image = self.app.asset_loader.get("full_health")
         self.xp_image = self.app.asset_loader.get("full_XP")
+        self.pause_image = self.app.asset_loader.get("pause_menu")
 
         self.level_menu = self.app.asset_loader.get("level_up_menu")
         
@@ -213,6 +214,25 @@ class HUD(Entity):
         self.app.paused = False
         for child in self.children:
             self.remove_child(child)
+    
+    def draw_pause_popup(self, surface):
+        rect = self.pause_image.get_rect()
+        rect.center = (surface.width / 2, surface.height / 2)
+        play = Button(self.app, self.resume, "sheet_2_play_button")
+        play.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 - 32)
+        exit = Button(self.app, self.quit_run, "sheet_2_exit_small_button")
+        exit.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 + 64)
+        self.add_child(play)
+        self.add_child(exit)
+        surface.blit(self.pause_image, rect.topleft) 
+    
+    def resume(self):
+        self.app.paused = False
+        for child in self.children:
+            self.remove_child(child)
+    
+    def quit_run(self):
+        self.app.current_scene = "main_menu"
 
     def draw(self, surface: pygame.Surface, camera_pos: pygame.Vector2):
         self.pos = -self.get_relative_pos(surface, camera_pos)
@@ -224,6 +244,8 @@ class HUD(Entity):
         if self.level_available == True:
             self.app.paused = True
             self.draw_level_popup(surface, camera_pos)
+        elif self.app.paused == True:
+            self.draw_pause_popup(surface)
         surface.blit(self.hud_image, self.pos)
         # self.draw_cursor(surface)
 
