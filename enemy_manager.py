@@ -50,7 +50,7 @@ class EnemyManager(Entity):
         boss.health *= 3 * self.health_mul
         boss.damage *= 2
         boss.held_xp = 10
-        boss.pos = self.player.pos + pygame.Vector2(0, -1) * self.SPAWN_DIST
+        boss.pos = self.player.pos + pygame.Vector2(0, -1) * self.MIN_SPAWN_DIST
 
         self.add_child(boss)
 
