@@ -46,6 +46,7 @@ class Enemy(Entity):
                 self.pos += self.velocity
             else:
                 if self.ranged_timer >= self.RANGED_TIMER_LIMIT:
+                    self.pos += self.velocity
                     target_pos = self.player.pos - self.pos
                     new_proj = Projectile(self.app, "arrow_dex", self.pos, target_pos, 10, 5, 10, False)
                     for entity in self.app.get_current_scene().enemy_manager.children:
