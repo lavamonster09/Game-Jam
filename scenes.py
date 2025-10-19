@@ -72,15 +72,17 @@ class WeaponSelectScene(Scene):
             "Str Melee": MeleeWeapon(self.app,"sheet_10_heavy_slash", 10, 2.5, 45, 20, 3, 1),
             "Dex Ranged": RangedWeapon(self.app,"arrow_dex", 1, 2, 20, 10, 1, 3),
             "Qua Ranged": RangedWeapon(self.app,"arrow_bal", 1, 2, 40, 10, 2, 2),
-            "Str Ranged": RangedWeapon(self.app,"arrow_str", 1, 2, 60, 10, 1, 3),
+            "Str Ranged": RangedWeapon(self.app,"arrow_str", 1, 2, 60, 10, 3, 1),
         }
         self.selected_weapon = None
 
         bg = Entity(self.app, "grass_background")
         bg.z_index = -1
+        bg.pos = pygame.Vector2(800,450)
         self.add_entity(bg)
 
         menu = Entity(self.app, "weapon_select_menu")
+        menu.pos = pygame.Vector2(800,450)
         self.add_entity(menu)
 
         dex_melee_btn = Button(self.app, self.weapon_on_click, "sheet_2_select_button", [self.weapons["Dex Melee"]], toggleable=True)
@@ -151,8 +153,10 @@ class MainMenu(Scene):
     def __init__(self, app):
         super().__init__(app)
         bg = Entity(self.app, "grass_background")
+        bg.pos = pygame.Vector2(800,450)
         bg.z_index = -1
         menu = Entity(self.app, "start_menu")
+        menu.pos = pygame.Vector2(800,450)
         new_run_button = Button(self.app, self.btn_new_run, "sheet_2_startrun_button")
         new_run_button.pos = pygame.Vector2(272 * 2,160 * 2)
         new_run_button.z_index = 100000

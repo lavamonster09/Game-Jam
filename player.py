@@ -109,7 +109,6 @@ class Player(Entity):
         if self.damage_counter == self.damage_cooldown:
             self.damage_counter = 0 
             self.health -= damage
-            print(self.health)
             if self.health <= 0:
                 self.app.current_scene = "death"
 
