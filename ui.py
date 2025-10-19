@@ -129,12 +129,12 @@ class HUD(Entity):
     
     def draw_time_played(self, surface: pygame.Surface):
         sec = self.app.timer // 60
-        time_sec = sec % 60
-        time_min = sec // 60
-        if time_sec < 10:
-            self.time_sec = f"0{time_sec}"
-        if time_min < 10:
-            self.time_min = f"0{time_min}"
+        self.time_sec = sec % 60
+        self.time_min = sec // 60
+        if self.time_sec < 10:
+            self.time_sec = f"0{self.time_sec}"
+        if self.time_min < 10:
+            self.time_min = f"0{self.time_min}"
 
         time_played = self.make_text(f"{self.time_min}:{self.time_sec}")
         
