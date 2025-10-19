@@ -91,7 +91,7 @@ class Player(Entity):
             self.max_health += 10
             self.health += 10
         if stat == "Endurance":
-            self.speed_modifier += 0.1
+            self.speed_modifier += 0.15
 
         if self.health + 20 <= self.max_health:
             self.health += 20

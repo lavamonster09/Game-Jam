@@ -48,6 +48,9 @@ class Enemy(Entity):
                 if self.ranged_timer >= self.RANGED_TIMER_LIMIT:
                     target_pos = self.player.pos - self.pos
                     new_proj = Projectile(self.app, "arrow_dex", self.pos, target_pos, 10, 5, 10, False)
+                    for entity in self.app.get_current_scene().enemy_manager.children:
+                        if self.pos.distance_to(entity.pos.xy) <= 64 and entity.attributes.get("collidable", False) and entity != self and(self.pos.move_towards(entity.pos, self.speed) - self.pos).magnitude() != 0:
+                            self.velocity -= 2 *(self.pos.move_towards(entity.pos, self.speed) - self.pos).normalize() 
                     self.add_child(new_proj)
                     self.ranged_timer = 0
                 else:
