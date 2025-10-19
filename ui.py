@@ -61,6 +61,7 @@ class HUD(Entity):
         self.MAX_HEALTH_TEXT_OFFSET = pygame.Vector2(65, 32)
         self.HEALTH_BAR_OFFSET = pygame.Vector2(33, 33)
         self.XP_OFFSET = pygame.Vector2(544, 32)
+        self.CHARGE_BAR_OFFSET = pygame.Vector2(20, 870)
         self.KILL_COUNT_OFFSET = pygame.Vector2(1440, 61)
         self.TIMER_OFFSET = pygame.Vector2(1440, 135)
         self.LEVEL_MENU_OFFSET = pygame.Vector2(576, 210)
@@ -146,6 +147,10 @@ class HUD(Entity):
         for child in self.children:
             child.draw(surface, camera_pos)
             child.update()
+
+    def draw_charge_bar(self, surface):
+        pygame.draw.rect(surface, '#00C494', (self.CHARGE_BAR_OFFSET + self.pos, (self.player.children[0].draw_timer * 10 - 100, 20)), border_radius= 5)
+        pygame.draw.rect(surface, '#77888C', (self.CHARGE_BAR_OFFSET + self.pos, (self.player.children[0].MAX_DRAW * 10 - 100, 20)), 5, 5)
 
     def cutout_health(self):
         size = self.health_image.size
@@ -238,6 +243,8 @@ class HUD(Entity):
         self.pos = -self.get_relative_pos(surface, camera_pos)
         self.draw_xp(surface)
         self.draw_health(surface)
+        if self.player.children[0].attributes["is_ranged"]:
+            self.draw_charge_bar(surface)
         self.draw_kill_count(surface)
         self.draw_time_played(surface)
         self.draw_fps(surface)
