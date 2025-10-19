@@ -7,6 +7,7 @@ class Xp(Entity):
         super().__init__(app, "xp")
         self.player = player
         self.counter = 0
+        self.z_index = -1
 
     def update(self):
         self.counter += 0.1

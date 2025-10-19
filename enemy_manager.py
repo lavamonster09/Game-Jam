@@ -21,23 +21,26 @@ class EnemyManager(Entity):
         self.BOSS_INTERVAL = 5
 
     def spawn_wave(self):
+        self.spawn_enemy(True)
         count = 0
         if self.rounds > 5:
             while count != self.rounds - 5:
+                print("spawned ranged")
                 count += 1                
         while count != self.rounds + 10:
-            self.spawn_enemy()
+            self.spawn_enemy(False)
             count += 1
 
         if self.rounds % self.BOSS_INTERVAL == 0 and self.rounds > 0:
             self.boss_round = True
 
-    def spawn_enemy(self):
+    def spawn_enemy(self, ranged: bool):
         enemy = Enemy(self.app, self.player)
         enemy.health *= self.health_mul
         rnd_dir = random.randrange(0, 360)
         enemy.pos = self.player.pos + pygame.Vector2(1, 0).rotate(rnd_dir) * self.SPAWN_DIST
-
+        if ranged:
+            enemy.attributes["ranged"] = True
         self.add_child(enemy)
 
     def spawn_boss(self):

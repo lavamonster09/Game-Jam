@@ -9,6 +9,7 @@ class Entity:
         self.app = app
         self.pos = pygame.Vector2(0, 0)
         self.offset = pygame.Vector2(0,0)
+        self.sprite_offset = pygame.Vector2(0,0)
         self.z_index = 0
 
     def update(self):
@@ -19,10 +20,10 @@ class Entity:
     def get_rect(self) -> pygame.Rect:
         if type(self.app.asset_loader.get(self.sprite)) == list:
             rect = self.app.asset_loader.get(self.sprite)[0].get_rect()
-            rect.topleft = self.pos.xy + self.offset
+            rect.topleft = self.pos.xy + self.offset - self.sprite_offset
         else:
             rect = self.app.asset_loader.get(self.sprite).get_rect()
-            rect.topleft = self.pos.xy + self.offset
+            rect.topleft = self.pos.xy + self.offset - self.sprite_offset
         return rect
     
     def get_screen_pos(self) -> pygame.Vector2:
@@ -34,8 +35,9 @@ class Entity:
             sprite = sprite[0]
         screen_size = surface.get_size()
         self.offset = pygame.Vector2(screen_size)//2 - camera_pos
+        self.sprite_offset = pygame.Vector2(sprite.get_size()) // 2
         if self.attributes.get("visible", False):
-            surface.blit(sprite, self.pos.xy + self.offset)
+            surface.blit(sprite, self.pos.xy + self.offset - self.sprite_offset)
         for child in self.children:
             child.draw(surface, camera_pos)
 
