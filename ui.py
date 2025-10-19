@@ -227,14 +227,13 @@ class HUD(Entity):
         play.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 - 32)
         exit = Button(self.app, self.quit_run, "sheet_2_exit_small_button")
         exit.pos = pygame.Vector2(surface.width/2 - 3 * 32, surface.height/2 + 64)
-        self.add_child(play)
         self.add_child(exit)
+        self.add_child(play)
         surface.blit(self.pause_image, rect.topleft) 
     
     def resume(self):
         self.app.paused = False
-        for child in self.children:
-            self.remove_child(child)
+        self.children = []
     
     def quit_run(self):
         self.app.current_scene = "main_menu"
