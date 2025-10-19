@@ -65,9 +65,9 @@ class WeaponSelectScene(Scene):
     def __init__(self, app):
         super().__init__(app)
         self.weapons = {
-            "Dex Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1, 1.5, 20, 10, 1, 3),
-            "Qua Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 1.5, 2, 15, 15, 2, 2),
-            "Str Melee": MeleeWeapon(self.app,"sheet_10_heavy_slash", 2, 2.5, 45, 20, 3, 1),
+            "Dex Melee": MeleeWeapon(self.app,"sheet_10_dex_slash", 5, 1.5, 10, 1, 1, 3),
+            "Qua Melee": MeleeWeapon(self.app,"sheet_6_katana_slash", 7, 2, 20, 15, 2, 2),
+            "Str Melee": MeleeWeapon(self.app,"sheet_10_heavy_slash", 10, 2.5, 45, 20, 3, 1),
             "Dex Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),
             "Qua Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 2, 2),
             "Str Ranged": RangedWeapon(self.app,"sheet_6_katana_slash", 1, 2, 20, 10, 1, 3),

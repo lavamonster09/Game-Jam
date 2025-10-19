@@ -71,7 +71,7 @@ class MeleeWeapon(Entity):
             rect = self.damage_rect
         else:
             rect = pygame.Rect(0,0,0,0)
-        rect.center = self.pos + dir * 100
+        rect.center = self.pos + dir * self.range * 10
         return rect
 
 class RangedWeapon(Entity):
